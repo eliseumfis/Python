@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo I - Academia Científica</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax para LaTeX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            background-color: #000000;
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .header-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 0.8rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0 1.5rem;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #3498db;
+        }
+        
+        .course-container {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .lessons-panel {
+            width: 35%;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .content-panel {
+            width: 65%;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .lesson-header:hover {
+            background: #e8e8e8;
+        }
+        
+        .subtopics-list {
+            list-style: none;
+            padding-left: 15px;
+            display: none;
+        }
+        
+        .lesson-item.expanded .subtopics-list {
+            display: block;
+        }
+        
+        .subtopic-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 3px 0;
+        }
+        
+        .subtopic-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .subtopic-item.active {
+            background: #e2d9f8;
+            border-left: 3px solid #4c38ff;
+        }
+        
+        .video-container iframe {
+            width: 100%;
+            height: 350px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        #current-lesson-desc {
+            white-space: pre-line;
+        }
+        
+        .simulation-container {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        .simulation-title {
+            text-align: center;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* PERSONALIZACIÓN DE COLORES */
+        /* Puedes cambiar estos valores para personalizar los colores: */
+        /* 
+        Para un esquema azul-verde:
+        - Reemplaza #667eea con #00d4ff (azul cyan)
+        - Reemplaza #764ba2 con #00ff88 (verde menta)
+        
+        Para un esquema naranja-rojo:
+        - Reemplaza #667eea con #ff6b35 (naranja)
+        - Reemplaza #764ba2 con #ff006e (rosa fuerte)
+        
+        Para un esquema dorado:
+        - Reemplaza #667eea con #ffd700 (dorado)
+        - Reemplaza #764ba2 con #ff8c00 (naranja oscuro)
+        */
+        
+        .simulation-subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        canvas.grab {
+            cursor: grab;
+        }
+        
+        canvas.grab:active {
+            cursor: grabbing;
+        }
+        
+        .sim-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            background: transparent;
+        }
+        
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .value-display {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3f34db;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3f34db;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: none;
+        }
+        
+        .presets {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85em;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn.active {
+            background: #667eea;
+        }
+        
+        .geometry-info {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-top: 15px;
+        }
+        
+        .geometry-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+        
+        .geometry-description {
+            line-height: 1.5;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 968px) {
+            .course-container {
+                flex-direction: column;
+            }
+            
+            .lessons-panel, .content-panel {
+                width: 100%;
+            }
+            
+            .presets {
+                flex-direction: column;
+            }
+            
+            .preset-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <h1>Academia Científica</h1>
+            <p>Cálculo I</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Volver al inicio</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="course-container">
+        <!-- Panel izquierdo: Temario -->
+        <aside class="lessons-panel">
+            <h2>Temario</h2>
+            <ul class="lessons-list"></ul>
+        </aside>
+
+        <!-- Panel derecho: Video + contenido -->
+        <section class="content-panel">
+            <div class="video-container">
+                <iframe src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-lesson-title"></h2>
+            <p id="current-lesson-desc"></p>
+            <div id="latex-content"></div>
+        </section>
+    </main>
+
+    <script>
+        // Datos del curso
+        const courseData = {
+            id:1,
+            title: "Cálculo I",
+            lessons: [
+                {
+                    id: 1,
+                    title: "Funciones",
+                    duration: "25 min",
+                    videoId: "NCY6cetm2Jg",
+                    description: "Definiendo conceptos básicos y necesarios de funciones y ecuaciones.",
+                    subtopics: [
+                        { title: "Definición de función", duration: "8 min", latex: "f: X \\to Y" },
+                        { title: "Dominio y rango", duration: "10 min", latex: "\\text{Dominio: } D_f, \\quad \\text{Rango: } R_f" },
+                        { title: "Tipos de funciones", duration: "7 min", latex: "f(x) = ax + b" }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Límites y continuidad",
+                    duration: "35 min",
+                    videoId: "VIDEO_ID_2",
+                    description: "Definiendo el concepto de límite y continuidad.",
+                    subtopics: [
+                        { title: "Definición de límite", duration: "8 min", latex: "\\lim_{x \\to a} f(x) = L" },
+                        { title: "Límites laterales", duration: "10 min", latex: "\\lim_{x \\to a^-} f(x) \\quad \\lim_{x \\to a^+} f(x)" },
+                        { title: "Continuidad", duration: "7 min", latex: "f \\text{ continua en } a \\iff \\lim_{x \\to a} f(x) = f(a)" }
+                    ]
+                }
+            ]
+        };
+
+        function renderLessons() {
+            const lessonsList = document.querySelector('.lessons-list');
+            lessonsList.innerHTML = '';
+
+            courseData.lessons.forEach(lesson => {
+                const lessonItem = document.createElement('li');
+                lessonItem.className = 'lesson-item';
+                
+                const lessonHeader = document.createElement('div');
+                lessonHeader.className = 'lesson-header';
+                lessonHeader.innerHTML = `
+                    <span class="lesson-title">${lesson.title}</span>
+                    <span class="lesson-duration">${lesson.duration}</span>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                `;
+                
+                const subtopicsList = document.createElement('ul');
+                subtopicsList.className = 'subtopics-list';
+
+                lesson.subtopics.forEach(subtopic => {
+                    const subtopicItem = document.createElement('li');
+                    subtopicItem.className = 'subtopic-item';
+                    subtopicItem.innerHTML = `
+                        <span class="subtopic-title">${subtopic.title}</span>
+                        <span class="subtopic-duration">${subtopic.duration}</span>
+                    `;
+                    subtopicItem.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll('.subtopic-item').forEach(item => item.classList.remove('active'));
+                        subtopicItem.classList.add('active');
+                        loadSubtopicContent(lesson, subtopic);
+                    });
+                    subtopicsList.appendChild(subtopicItem);
+                });
+
+                lessonHeader.addEventListener('click', () => {
+                    lessonItem.classList.toggle('expanded');
+                    const icon = lessonHeader.querySelector('.toggle-icon');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+
+                lessonItem.appendChild(lessonHeader);
+                lessonItem.appendChild(subtopicsList);
+                lessonsList.appendChild(lessonItem);
+            });
+        }
+
+        function loadSubtopicContent(lesson, subtopic) {
+            const videoContainer = document.querySelector('.video-container iframe');
+            const lessonTitle = document.getElementById('current-lesson-title');
+            const lessonDesc = document.getElementById('current-lesson-desc');
+            const latexContainer = document.getElementById('latex-content');
+            
+            videoContainer.src = `https://www.youtube.com/embed/${lesson.videoId}?autoplay=1`;
+            lessonTitle.textContent = `${lesson.title} - ${subtopic.title}`;
+            lessonDesc.textContent = lesson.description;
+            latexContainer.innerHTML = `\\(${subtopic.latex}\\)`;
+            MathJax.typesetPromise();
+        }
+
+        function loadLesson(lesson) {
+            const videoContainer = document.querySelector('.video-container iframe');
+            const lessonTitle = document.getElementById('current-lesson-title');
+            const lessonDesc = document.getElementById('current-lesson-desc');
+            const latexContainer = document.getElementById('latex-content');
+
+            videoContainer.src = `https://www.youtube.com/embed/${lesson.videoId}?autoplay=1`;
+            lessonTitle.textContent = lesson.title;
+            lessonDesc.textContent = lesson.description;
+            latexContainer.innerHTML = '';
+            MathJax.typesetPromise();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLessons();
+            if (courseData.lessons.length > 0) {
+                loadLesson(courseData.lessons[0]);
+            }
+        });
+    </script>
+</body>
+</html>
+

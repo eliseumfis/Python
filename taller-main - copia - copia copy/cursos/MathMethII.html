@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métodos Matemáticos para Físicos II - Academia Científica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax para LaTeX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .header-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        nav li {
+            margin: 0 10px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .course-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            gap: 20px;
+        }
+        
+        .lessons-panel {
+            width: 35%;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .content-panel {
+            width: 65%;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .lesson-header:hover {
+            background: #e8eaf6;
+        }
+        
+        .subtopics-list {
+            list-style: none;
+            padding-left: 15px;
+            display: none;
+        }
+        
+        .lesson-item.expanded .subtopics-list {
+            display: block;
+        }
+        
+        .subtopic-item {
+            padding: 8px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .subtopic-item:hover {
+            background: #f0f0f0;
+            border-left-color: #5c6bc0;
+        }
+        
+        .subtopic-item.active {
+            background: #e3f2fd;
+            border-left-color: #1a237e;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .video-container iframe {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #current-lesson-desc {
+            white-space: pre-line;
+            margin-top: 20px;
+            line-height: 1.8;
+        }
+        
+        .MathJax {
+            color: inherit !important;
+        }
+        
+        h2 {
+            color: #1a237e;
+            margin: 20px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        
+        h3 {
+            color: #283593;
+            margin: 15px 0 10px;
+        }
+        
+        h4 {
+            color: #3949ab;
+            margin: 12px 0 8px;
+        }
+        
+        .math-content {
+            overflow-x: auto;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #5c6bc0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background-color: #e8eaf6;
+            color: #1a237e;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        
+        @media (max-width: 900px) {
+            .course-container {
+                flex-direction: column;
+            }
+            
+            .lessons-panel, .content-panel {
+                width: 100%;
+            }
+            
+            .video-container iframe {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <h1>Academia Científica</h1>
+            <p>Métodos Matemáticos para Físicos II</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Volver al inicio</a></li>
+                <li><a href="#">Recursos</a></li>
+                <li><a href="#">Ejercicios</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="course-container">
+        <!-- Panel izquierdo: Temario -->
+        <aside class="lessons-panel">
+            <h2>Temario</h2>
+            <ul class="lessons-list">
+                <!-- Las lecciones se generarán dinámicamente con JavaScript -->
+            </ul>
+        </aside>
+
+        <!-- Panel derecho: Video + contenido -->
+        <section class="content-panel">
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-lesson-title">Vectores y Sistemas de Coordenadas</h2>
+            <div id="current-lesson-desc">
+                Introducción a los vectores, sus propiedades y sistemas de coordenadas en física.
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Datos del curso
+        const courseData = {
+            id: 4,
+            title: "Métodos Matemáticos para Físicos II",
+            lessons: [
+                {
+                    id: 1,
+                    title: "Vectores y Sistemas de Coordenadas",
+                    duration: "60 min",
+                    videoId: "dQw4w9WgXcQ",
+                    description: "Fundamentos de vectores y sistemas de coordenadas en física",
+                    subtopics: [
+                        {
+                            title: "Vectores: Posición y Propiedades",
+                            duration: "20 min",
+                            description: `<h3>Vectores: Posición, Desplazamiento y Separación</h3>
+                            <div class="math-content">
+                                <p>Vector posición:</p>
+                                \\[\\vec{r} = x\\hat{i} + y\\hat{j} + z\\hat{k}\\]
+                                <p>Magnitud:</p>
+                                \\[r=\\sqrt{x^{2}+y^{2} + z^{2}}\\]
+                                <p>Vector unitario:</p>
+                                \\[\\hat{r} = \\frac{\\vec{r}}{r} = \\frac{x\\hat{i} + y\\hat{j} + z\\hat{k}}{\\sqrt{x^{2}+y^{2} + z^{2}}}\\]
+                            </div>
+                            
+                            <h4>Propiedades de Vectores</h4>
+                            <ul>
+                                <li>Conmutatividad: \\(\\vec{A} + \\vec{B} = \\vec{B} + \\vec{A}\\)</li>
+                                <li>Asociatividad: \\(\\left( \\vec{A} + \\vec{B}\\right) + \\vec{C} = \\vec{A} + \\left(\\vec{B} + \\vec{C}\\right)\\)</li>
+                                <li>Resta: \\(\\vec{A} - \\vec{B} = \\vec{A} + (-1) \\vec{B}\\)</li>
+                            </ul>
+                            
+                            <h4>Vectores Unitarios</h4>
+                            <div class="math-content">
+                                \\[\\hat{i} \\cdot \\hat{i} = \\hat{j} \\cdot \\hat{j} = \\hat{k} \\cdot \\hat{k} = 1\\]
+                                \\[\\hat{i} \\cdot \\hat{j} = \\hat{j} \\cdot \\hat{k} = \\hat{k} \\cdot \\hat{i} = 0\\]
+                                \\[\\hat{i} \\times \\hat{i} = \\hat{j} \\times \\hat{j} = \\hat{k} \\times \\hat{k} = 0\\]
+                                \\[\\hat{i} \\times \\hat{j} = \\hat{k} \\ \\ \\ \\hat{j} \\times \\hat{k} = \\hat{i} \\  \\ \\ \\hat{k} \\times \\hat{i} = \\hat{j}\\]
+                            </div>`
+                        },
+                        {
+                            title: "Producto Punto y Cruz",
+                            duration: "20 min",
+                            description: `<h3>Producto Punto</h3>
+                            <div class="math-content">
+                                \\[\\vec{A} \\cdot \\vec{B} = \\left|\\vec{A}\\right| \\left|\\vec{B}\\right|cos \\ \\theta \\ \\]
+                                \\[\\vec{A} \\cdot \\vec{B} = A_{1}B_{1} + A_{2}B_{2} + ...\\]
+                                \\[\\left|\\vec{A}\\right|^{2} = \\vec{A} \\cdot \\vec{A}\\]
+                            </div>
+                            
+                            <h3>Producto Cruz</h3>
+                            <div class="math-content">
+                                \\[\\vec{C} = \\vec{A} \\times \\vec{B} = \\left(ABsin\\ \\theta \\ \\right) \\hat{e}_{c}\\]
+                                \\[\\vec{C} = \\vec{A} \\times \\vec{B}= \\begin{vmatrix}
+                                \\hat{e}_{x} &\\hat{e}_{y}  &\\hat{e}_{z} \\\\ 
+                                A_{x} & A_{y}  & A_{z} \\\\ 
+                                B_{x} & B_{y}  & B_{z}
+                                \\end{vmatrix}\\]
+                                \\[= \\hat{e}_{x}\\left(A_{y}B_{z} - A_{z}B_{y}\\right) + \\hat{e}_{y} \\left(A_{x}B_{z} - A_{z}B_{x}\\right) + \\hat{e}_{z} \\left(A_{x}B_{y} - A_{y}B_{x}\\right)\\]
+                            </div>
+                            
+                            <h4>Propiedades</h4>
+                            <ul>
+                                <li>Anticonmutatividad: \\(\\vec{A} \\times \\vec{B} = - \\vec{B} \\times \\vec{A}\\)</li>
+                                <li>Distributividad: \\(\\vec{A} \\times \\left(\\vec{B} + \\vec{C}\\right) = \\vec{A} \\times \\vec{B} + \\vec{A} \\times \\vec{C}\\)</li>
+                            </ul>`
+                        },
+                        {
+                            title: "Sistemas de Coordenadas",
+                            duration: "20 min",
+                            description: `<h3>Sistemas de Coordenadas</h3>
+                            
+                            <h4>Coordenadas Cartesianas</h4>
+                            <div class="math-content">
+                                <p>Posición:</p>
+                                \\[\\vec{r} = x \\hat{i} + y \\hat{j} + z \\hat{k}\\]
+                                <p>Velocidad:</p>
+                                \\[\\vec{v} = \\dot{x} \\hat{i} + \\dot{y} \\hat{j} + \\dot{z} \\hat{k}\\]
+                                <p>Aceleración:</p>
+                                \\[\\vec{a} = \\ddot{x} \\hat{i} + \\ddot{y} \\hat{j} + \\ddot{z} \\hat{k}\\]
+                            </div>
+                            
+                            <h4>Coordenadas Cilíndricas</h4>
+                            <div class="math-content">
+                                <p>Transformación:</p>
+                                \\[x = \\rho cos \\phi, \\quad y = \\rho sin \\phi, \\quad z = z\\]
+                                <p>Vectores unitarios:</p>
+                                \\[\\hat{\\rho} = cos \\phi \\hat{i} + sin \\phi \\hat{j}\\]
+                                \\[\\hat{\\phi} = -sin \\phi \\hat{i} + cos \\phi \\hat{j}\\]
+                                \\[\\hat{z} = \\hat{k}\\]
+                            </div>
+                            
+                            <h4>Coordenadas Esféricas</h4>
+                            <div class="math-content">
+                                <p>Transformación:</p>
+                                \\[x = r sin \\theta cos \\phi\\]
+                                \\[y = r sin \\theta sin \\phi\\]
+                                \\[z = r cos \\theta\\]
+                                <p>Vectores unitarios:</p>
+                                \\[\\hat{r} = sin \\theta cos \\phi \\hat{i} + sin \\theta sin \\phi \\hat{j} + cos \\theta \\hat{k}\\]
+                                \\[\\hat{\\theta} = cos \\theta cos \\phi \\hat{i} + cos \\theta sin \\phi \\hat{j} - sin \\theta \\hat{k}\\]
+                                \\[\\hat{\\phi} = -sin \\phi \\hat{i} + cos \\phi \\hat{j}\\]
+                            </div>`
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Operadores Diferenciales Vectoriales",
+                    duration: "55 min",
+                    videoId: "VIDEO_ID_2",
+                    description: "Gradiente, divergencia, rotor y laplaciano en diferentes sistemas de coordenadas",
+                    subtopics: [
+                        {
+                            title: "Gradiente y Divergencia",
+                            duration: "20 min",
+                            description: `<h3>Gradiente</h3>
+                            <div class="math-content">
+                                \\[\\vec{\\nabla} \\varphi = \\frac{\\partial \\varphi}{\\partial x} \\hat{i} + \\frac{\\partial \\varphi}{\\partial y} \\hat{j} + \\frac{\\partial \\varphi}{\\partial z} \\hat{k}\\]
+                                \\[d\\varphi = \\left( \\vec{\\nabla} \\varphi \\right) \\cdot d\\vec{l}\\]
+                            </div>
+                            
+                            <h4>Divergencia</h4>
+                            <div class="math-content">
+                                \\[\\vec{\\nabla} \\cdot \\vec{A} = \\frac{\\partial A_{x}}{\\partial x} + \\frac{\\partial A_{y}}{\\partial y} + \\frac{\\partial A_{z}}{\\partial z}\\]
+                                <p>Interpretación física:</p>
+                                <ul>
+                                    <li>0 → Solenoidal (curvas cerradas)</li>
+                                    <li>(+) → Fuente (sale)</li>
+                                    <li>(-) → Sumidero (entra)</li>
+                                </ul>
+                            </div>
+                            
+                            <h4>Ecuación de Continuidad</h4>
+                            <div class="math-content">
+                                \\[\\frac{\\partial \\rho}{\\partial t} + \\vec{\\nabla} \\cdot (\\rho \\vec{v}) = 0\\]
+                            </div>`
+                        },
+                        {
+                            title: "Rotor y Laplaciano",
+                            duration: "20 min",
+                            description: `<h3>Rotor</h3>
+                            <div class="math-content">
+                                \\[\\vec{\\nabla} \\times \\vec{A} = \\begin{vmatrix}
+                                \\hat{i} & \\hat{j} & \\hat{k} \\\\
+                                \\frac{\\partial}{\\partial x} & \\frac{\\partial}{\\partial y} & \\frac{\\partial}{\\partial z} \\\\
+                                A_{x} & A_{y} & A_{z}
+                                \\end{vmatrix}\\]
+                                \\[= \\hat{i}\\left(\\frac{\\partial A_{z}}{\\partial y} - \\frac{\\partial A_{y}}{\\partial z}\\right) + \\hat{j}\\left(\\frac{\\partial A_{x}}{\\partial z} - \\frac{\\partial A_{z}}{\\partial x}\\right) + \\hat{k}\\left(\\frac{\\partial A_{y}}{\\partial x} - \\frac{\\partial A_{x}}{\\partial y}\\right)\\]
+                            </div>
+                            
+                            <h3>Laplaciano</h3>
+                            <div class="math-content">
+                                \\[\\nabla^{2} \\varphi = \\vec{\\nabla} \\cdot \\vec{\\nabla} \\varphi = \\frac{\\partial^{2} \\varphi}{\\partial x^{2}} + \\frac{\\partial^{2} \\varphi}{\\partial y^{2}} + \\frac{\\partial^{2} \\varphi}{\\partial z^{2}}\\]
+                            </div>
+                            
+                            <h4>Identidades Importantes</h4>
+                            <div class="math-content">
+                                \\[\\vec{\\nabla} \\times (\\vec{\\nabla} \\varphi) = 0\\]
+                                \\[\\vec{\\nabla} \\cdot (\\vec{\\nabla} \\times \\vec{A}) = 0\\]
+                                \\[\\vec{\\nabla} \\times (\\vec{\\nabla} \\times \\vec{A}) = \\vec{\\nabla}(\\vec{\\nabla} \\cdot \\vec{A}) - \\nabla^{2} \\vec{A}\\]
+                            </div>`
+                        },
+                        {
+                            title: "Coordenadas Curvilíneas",
+                            duration: "15 min",
+                            description: `<h3>Operadores en Coordenadas Curvilíneas</h3>
+                            
+                            <h4>Coordenadas Cilíndricas</h4>
+                            <div class="math-content">
+                                <p>Gradiente:</p>
+                                \\[\\vec{\\nabla} \\psi = \\frac{\\partial \\psi}{\\partial \\rho} \\hat{e}_{\\rho} + \\frac{1}{\\rho} \\frac{\\partial \\psi}{\\partial \\phi} \\hat{e}_{\\phi} + \\frac{\\partial \\psi}{\\partial z} \\hat{e}_{z}\\]
+                                <p>Divergencia:</p>
+                                \\[\\vec{\\nabla} \\cdot \\vec{V} = \\frac{1}{\\rho} \\frac{\\partial}{\\partial \\rho}(\\rho V_{\\rho}) + \\frac{1}{\\rho} \\frac{\\partial V_{\\phi}}{\\partial \\phi} + \\frac{\\partial V_{z}}{\\partial z}\\]
+                                <p>Laplaciano:</p>
+                                \\[\\nabla^{2} \\psi = \\frac{1}{\\rho} \\frac{\\partial}{\\partial \\rho}\\left(\\rho \\frac{\\partial \\psi}{\\partial \\rho}\\right) + \\frac{1}{\\rho^{2}} \\frac{\\partial^{2} \\psi}{\\partial \\phi^{2}} + \\frac{\\partial^{2} \\psi}{\\partial z^{2}}\\]
+                            </div>
+                            
+                            <h4>Coordenadas Esféricas</h4>
+                            <div class="math-content">
+                                <p>Gradiente:</p>
+                                \\[\\vec{\\nabla} \\psi = \\frac{\\partial \\psi}{\\partial r} \\hat{e}_{r} + \\frac{1}{r} \\frac{\\partial \\psi}{\\partial \\theta} \\hat{e}_{\\theta} + \\frac{1}{r sin \\theta} \\frac{\\partial \\psi}{\\partial \\phi} \\hat{e}_{\\phi}\\]
+                                <p>Divergencia:</p>
+                                \\[\\vec{\\nabla} \\cdot \\vec{V} = \\frac{1}{r^{2}} \\frac{\\partial}{\\partial r}(r^{2} V_{r}) + \\frac{1}{r sin \\theta} \\frac{\\partial}{\\partial \\theta}(sin \\theta V_{\\theta}) + \\frac{1}{r sin \\theta} \\frac{\\partial V_{\\phi}}{\\partial \\phi}\\]
+                            </div>`
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "Análisis Tensorial y Álgebra Lineal",
+                    duration: "70 min",
+                    videoId: "VIDEO_ID_3",
+                    description: "Tensores, matrices, determinantes y valores propios",
+                    subtopics: [
+                        {
+                            title: "Tensores y Transformaciones",
+                            duration: "25 min",
+                            description: `<h3>Análisis Tensorial</h3>
+                            
+                            <h4>Clasificación</h4>
+                            <ul>
+                                <li><strong>Escalar:</strong> Cantidad invariante bajo rotaciones. Rango 0</li>
+                                <li><strong>Vector:</strong> N números que transforman de manera específica bajo rotaciones. Rango 1</li>
+                                <li><strong>Tensor:</strong> Objeto con n índices que transforma de manera específica bajo rotaciones. Rango n</li>
+                            </ul>
+                            
+                            <h4>Tensores Covariantes y Contravariantes</h4>
+                            <div class="math-content">
+                                <p>Vector transformado:</p>
+                                \\[A'_{i} = \\sum_{j}\\left(\\hat{e}'_{i} \\cdot \\hat{e}'_{j}\\right)A_{j}\\]
+                                \\[A'_{i} = \\sum_{j} \\frac{\\partial x'_{j}}{\\partial x_{j}}A_{j}\\]
+                                
+                                <p>Tensor Contravariante:</p>
+                                \\[(A')^{i} = \\sum_{j}\\frac{\\partial (x')^{i}}{\\partial x^{j}}A^{j}\\]
+                                
+                                <p>Tensor Covariante:</p>
+                                \\[A'_{i} = \\sum_{j}\\frac{\\partial x^{j}}{\\partial (x')^{i}}A_{j}\\]
+                            </div>`
+                        },
+                        {
+                            title: "Matrices y Determinantes",
+                            duration: "25 min",
+                            description: `<h3>Matrices</h3>
+                            
+                            <h4>Propiedades</h4>
+                            <ul>
+                                <li>Conmutativa: \\(A + B = B + A\\)</li>
+                                <li>Asociativa: \\((A + B) + C = A + (B + C)\\)</li>
+                                <li>Multiplicación por escalar: \\(B = \\alpha A\\)</li>
+                                <li>Producto matricial: \\(AB = C\\), \\(c_{ij} = \\sum_{k} a_{ik} b_{kj}\\)</li>
+                            </ul>
+                            
+                            <h3>Determinantes</h3>
+                            <div class="math-content">
+                                <p>Orden 2:</p>
+                                \\[D_2 = \\begin{vmatrix}
+                                a_{11} & a_{12} \\\\
+                                a_{21} & a_{22}
+                                \\end{vmatrix} = a_{11}a_{22} - a_{12}a_{21}\\]
+                                
+                                <p>Orden 3:</p>
+                                \\[D_3 = \\begin{vmatrix}
+                                a_{11} & a_{12} & a_{13} \\\\
+                                a_{21} & a_{22} & a_{23} \\\\
+                                a_{31} & a_{32} & a_{33}
+                                \\end{vmatrix} = a_{11}a_{22}a_{33} - a_{11}a_{23}a_{32} - a_{13}a_{22}a_{31} - a_{12}a_{21}a_{33} + a_{12}a_{23}a_{31} + a_{13}a_{21}a_{32}\\]
+                            </div>
+                            
+                            <h4>Propiedades de Determinantes</h4>
+                            <ul>
+                                <li>Intercambio de filas/columnas cambia el signo</li>
+                                <li>Dos filas/columnas iguales resulta en determinante cero</li>
+                                <li>Multiplicación por escalar: \\(\\text{det}(\\alpha A) = \\alpha^n \\text{det}(A)\\)</li>
+                            </ul>`
+                        },
+                        {
+                            title: "Valores y Vectores Propios",
+                            duration: "20 min",
+                            description: `<h3>Valores y Vectores Propios</h3>
+                            
+                            <div class="math-content">
+                                \\[Hr = \\lambda r\\]
+                                \\[(H - \\lambda I)r = 0\\]
+                                \\[\\text{det}(H - \\lambda I) = 0\\]
+                            </div>
+                            
+                            <h4>Propiedades</h4>
+                            <ul>
+                                <li>Los valores propios de una matriz hermitiana son reales</li>
+                                <li>Los vectores propios de una matriz hermitiana son ortogonales</li>
+                                <li>Diagonalización: \\(UHU^{-1}\\) es diagonal</li>
+                            </ul>
+                            
+                            <h4>Descomposición Espectral</h4>
+                            <div class="math-content">
+                                \\[H = \\sum_{\\mu} \\lambda_{\\mu} |c_{\\mu}\\rangle \\langle c_{\\mu}|\\]
+                                \\[f(H) = \\sum_{\\mu} f(\\lambda_{\\mu}) |c_{\\mu}\\rangle \\langle c_{\\mu}|\\]
+                            </div>`
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "Series de Fourier y Ecuaciones Diferenciales",
+                    duration: "65 min",
+                    videoId: "VIDEO_ID_4",
+                    description: "Series de Fourier, ecuaciones diferenciales y funciones especiales",
+                    subtopics: [
+                        {
+                            title: "Series de Fourier",
+                            duration: "20 min",
+                            description: `<h3>Series de Fourier</h3>
+                            
+                            <div class="math-content">
+                                \\[f(x) = \\frac{1}{2L} \\sum_{n \\in \\mathbb{Z}} \\hat{f}_n e^{in\\pi x / L}\\]
+                                \\[\\hat{f}_n = \\frac{1}{2\\pi} \\int_{-\\pi}^{\\pi} e^{-inx} f(x)  dx\\]
+                            </div>
+                            
+                            <h4>Funciones Reales</h4>
+                            <div class="math-content">
+                                \\[f(\\theta) = \\hat{f}_0 + \\sum_{n=1}^{\\infty} (a_n \\cos n\\theta + b_n \\sin n\\theta)\\]
+                                \\[a_n = \\frac{1}{\\pi} \\int_{-\\pi}^{\\pi} \\cos(n\\theta) f(\\theta)  d\\theta\\]
+                                \\[b_n = \\frac{1}{\\pi} \\int_{-\\pi}^{\\pi} \\sin(n\\theta) f(\\theta)  d\\theta\\]
+                            </div>
+                            
+                            <h4>Identidad de Parseval</h4>
+                            <div class="math-content">
+                                \\[(f, f) = 2\\pi \\sum_{k \\in \\mathbb{Z}} |\\hat{f}_k|^2\\]
+                            </div>`
+                        },
+                        {
+                            title: "Ecuaciones Diferenciales",
+                            duration: "25 min",
+                            description: `<h3>Ecuaciones Diferenciales</h3>
+                            
+                            <h4>Operadores Diferenciales</h4>
+                            <div class="math-content">
+                                \\[\\mathcal{L} = A_p(x) \\frac{d^p}{dx^p} + A_{p-1}(x) \\frac{d^{p-1}}{dx^{p-1}} + \\cdots + A_1(x) \\frac{d}{dx} + A_0(x)\\]
+                            </div>
+                            
+                            <h4>Operadores Autoadjuntos</h4>
+                            <div class="math-content">
+                                \\[\\mathcal{L}y \\equiv \\frac{d}{dx} \\left( p(x) \\frac{dy}{dx} \\right) - q(x)y\\]
+                                \\[(\\mathcal{L}f, g) = (f,\\mathcal{L}g)\\]
+                            </div>
+                            
+                            <h4>Función de Green</h4>
+                            <div class="math-content">
+                                \\[\\mathcal{L}G = \\delta(x - \\xi)\\]
+                                \\[y(x) = \\int_a^b G(x; \\xi)f(\\xi)d\\xi\\]
+                            </div>`
+                        },
+                        {
+                            title: "Funciones Especiales",
+                            duration: "20 min",
+                            description: `<h3>Funciones Especiales</h3>
+                            
+                            <h4>Polinomios de Legendre</h4>
+                            <div class="math-content">
+                                \\[\\frac{d}{dx} \\left( (1 - x^2) \\frac{d\\Theta}{dx} \\right) = -\\lambda \\Theta\\]
+                                \\[P_l(x) = \\frac{1}{2^l l!} \\frac{d^l}{dx^l} (x^2 - 1)^l\\]
+                                \\[\\int_{-1}^{1} P_m(x) P_l(x)  dx = \\frac{2}{2l + 1} \\delta_{ml}\\]
+                            </div>
+                            
+                            <h4>Funciones de Bessel</h4>
+                            <div class="math-content">
+                                \\[x^2 \\frac{d^2 R}{dx^2} + x \\frac{dR}{dx} + (x^2 - n^2)R = 0\\]
+                                \\[J_n(x) = \\left( \\frac{x}{2} \\right)^n \\sum_{k=0}^\\infty \\frac{(-1)^k}{k!(k + n)!} \\left( \\frac{x}{2} \\right)^{2k}\\]
+                            </div>`
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    title: "Ecuaciones en Derivadas Parciales",
+                    duration: "60 min",
+                    videoId: "VIDEO_ID_5",
+                    description: "Ecuación de Laplace, ecuación de onda y métodos de solución",
+                    subtopics: [
+                        {
+                            title: "Ecuación de Laplace",
+                            duration: "20 min",
+                            description: `<h3>Ecuación de Laplace</h3>
+                            
+                            <div class="math-content">
+                                \\[\\nabla^2 \\psi \\equiv \\sum_{i=1}^{d} \\frac{\\partial^2 \\psi}{\\partial x_i^2} = 0\\]
+                            </div>
+                            
+                            <h4>Condiciones de Contorno</h4>
+                            <ul>
+                                <li><strong>Dirichlet:</strong> \\(\\psi(x) = f(x) \\quad \\forall x \\in \\partial \\Omega\\)</li>
+                                <li><strong>Neumann:</strong> \\(\\mathbf{n} \\cdot \\nabla \\psi(x) = g(x) \\quad \\forall x \\in \\partial \\Omega\\)</li>
+                            </ul>
+                            
+                            <h4>Separación de Variables</h4>
+                            <div class="math-content">
+                                \\[\\psi(x, y, z) = X(x)Y(y)Z(z)\\]
+                                \\[\\frac{X''(x)}{X(x)} + \\frac{Y''(y)}{Y(y)} + \\frac{Z''(z)}{Z(z)} = 0\\]
+                            </div>`
+                        },
+                        {
+                            title: "Ecuación de Onda",
+                            duration: "20 min",
+                            description: `<h3>Ecuación de Onda</h3>
+                            
+                            <div class="math-content">
+                                \\[\\frac{\\partial^2 \\phi}{\\partial t^2} = c^2 \\nabla^2 \\phi\\]
+                                \\[c^2 = \\frac{T}{\\mu}\\]
+                            </div>
+                            
+                            <h4>Solución por Separación de Variables</h4>
+                            <div class="math-content">
+                                \\[\\phi(x, t) = X(x)T(t)\\]
+                                \\[X'' = -\\lambda X \\quad \\text{y} \\quad T'' = -c^2 \\lambda T\\]
+                                \\[\\phi(x, t) = \\sum_{n=1}^{\\infty} \\sin \\left( \\frac{n \\pi x}{L} \\right) \\left( A_n \\cos \\left( \\frac{n \\pi c t}{L} \\right) + B_n \\sin \\left( \\frac{n \\pi c t}{L} \\right) \\right)\\]
+                            </div>`
+                        },
+                        {
+                            title: "Transformada de Fourier",
+                            duration: "20 min",
+                            description: `<h3>Transformada de Fourier</h3>
+                            
+                            <div class="math-content">
+                                \\[\\tilde{f}(k) := \\int_{-\\infty}^{\\infty} e^{-ikx} f(x)  dx\\]
+                                \\[f(x) = \\frac{1}{2\\pi} \\int_{-\\infty}^{\\infty} e^{ikx} \\tilde{f}(k)  dk\\]
+                            </div>
+                            
+                            <h4>Propiedades</h4>
+                            <ul>
+                                <li>Linealidad: \\(\\mathcal{F}[c_1f + c_2g] = c_1 \\mathcal{F}[f] + c_2 \\mathcal{F}[g]\\)</li>
+                                <li>Desplazamiento: \\(\\mathcal{F}[f(x - a)] = e^{-ika} \\mathcal{F}[f]\\)</li>
+                                <li>Modulación: \\(\\mathcal{F}[e^{iax} f(x)] = \\tilde{f}(k - a)\\)</li>
+                                <li>Derivación: \\(\\mathcal{F}[f'(x)] = ik \\tilde{f}(k)\\)</li>
+                            </ul>
+                            
+                            <h4>Convolución</h4>
+                            <div class="math-content">
+                                \\[(f * g)(x) := \\int_{-\\infty}^{\\infty} f(x - y)g(y)  dy\\]
+                                \\[\\mathcal{F}[f * g] = \\tilde{f}(k) \\tilde{g}(k)\\]
+                            </div>`
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Función para inicializar el curso
+        function initCourse() {
+            const lessonsList = document.querySelector('.lessons-list');
+            
+            // Generar las lecciones
+            courseData.lessons.forEach(lesson => {
+                const lessonItem = document.createElement('li');
+                lessonItem.className = 'lesson-item';
+                lessonItem.innerHTML = `
+                    <div class="lesson-header" data-lesson-id="${lesson.id}">
+                        <div>
+                            <h3>${lesson.title}</h3>
+                            <span>${lesson.duration}</span>
+                        </div>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                    <ul class="subtopics-list">
+                        ${lesson.subtopics.map(subtopic => `
+                            <li class="subtopic-item" data-lesson-id="${lesson.id}" data-subtopic-id="${lesson.subtopics.indexOf(subtopic)}">
+                                <div>
+                                    <h4>${subtopic.title}</h4>
+                                    <span>${subtopic.duration}</span>
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                lessonsList.appendChild(lessonItem);
+            });
+            
+            // Event listeners para expandir/contraer lecciones
+            document.querySelectorAll('.lesson-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const lessonItem = this.parentElement;
+                    lessonItem.classList.toggle('expanded');
+                    const icon = this.querySelector('.toggle-icon');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+            });
+            
+            // Event listeners para subtemas
+            document.querySelectorAll('.subtopic-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remover clase activa de todos los subtemas
+                    document.querySelectorAll('.subtopic-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    
+                    // Añadir clase activa al subtema seleccionado
+                    this.classList.add('active');
+                    
+                    // Obtener datos del subtema
+                    const lessonId = parseInt(this.getAttribute('data-lesson-id'));
+                    const subtopicId = parseInt(this.getAttribute('data-subtopic-id'));
+                    
+                    // Actualizar contenido
+                    updateContent(lessonId, subtopicId);
+                });
+            });
+            
+            // Inicializar con el primer subtema
+            document.querySelector('.subtopic-item').classList.add('active');
+            updateContent(1, 0);
+        }
+        
+        // Función para actualizar el contenido
+        function updateContent(lessonId, subtopicId) {
+            const lesson = courseData.lessons.find(l => l.id === lessonId);
+            const subtopic = lesson.subtopics[subtopicId];
+            
+            // Actualizar video
+            const iframe = document.querySelector('.video-container iframe');
+            iframe.src = `https://www.youtube.com/embed/${lesson.videoId}`;
+            
+            // Actualizar título y descripción
+            document.getElementById('current-lesson-title').textContent = subtopic.title;
+            document.getElementById('current-lesson-desc').innerHTML = subtopic.description;
+            
+            // Reprocesar MathJax
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        }
+        
+        // Inicializar el curso cuando se carga la página
+        document.addEventListener('DOMContentLoaded', initCourse);
+    </script>
+</body>
+</html>

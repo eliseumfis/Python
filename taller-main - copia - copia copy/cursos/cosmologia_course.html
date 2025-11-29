@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmología - Academia Científica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            background-color: #000000;
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .header-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 0.8rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0 1.5rem;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #3498db;
+        }
+        
+        .course-container {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .lessons-panel {
+            width: 35%;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .content-panel {
+            width: 65%;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .lesson-header:hover {
+            background: #e8e8e8;
+        }
+        
+        .subtopics-list {
+            list-style: none;
+            padding-left: 15px;
+            display: none;
+        }
+        
+        .lesson-item.expanded .subtopics-list {
+            display: block;
+        }
+        
+        .subtopic-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 3px 0;
+        }
+        
+        .subtopic-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .subtopic-item.active {
+            background: #e2d9f8;
+            border-left: 3px solid #4c38ff;
+        }
+        
+        .video-container iframe {
+            width: 100%;
+            height: 350px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        #current-lesson-desc {
+            white-space: pre-line;
+        }
+        
+        .simulation-container {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        .simulation-title {
+            text-align: center;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 22px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* PERSONALIZACIÓN DE COLORES */
+        /* Puedes cambiar estos valores para personalizar los colores: */
+        /* 
+        Para un esquema azul-verde:
+        - Reemplaza #667eea con #00d4ff (azul cyan)
+        - Reemplaza #764ba2 con #00ff88 (verde menta)
+        
+        Para un esquema naranja-rojo:
+        - Reemplaza #667eea con #ff6b35 (naranja)
+        - Reemplaza #764ba2 con #ff006e (rosa fuerte)
+        
+        Para un esquema dorado:
+        - Reemplaza #667eea con #ffd700 (dorado)
+        - Reemplaza #764ba2 con #ff8c00 (naranja oscuro)
+        */
+        
+        .simulation-subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        canvas.grab {
+            cursor: grab;
+        }
+        
+        canvas.grab:active {
+            cursor: grabbing;
+        }
+        
+        .sim-controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            background: transparent;
+        }
+        
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .value-display {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3f34db;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3f34db;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: none;
+        }
+        
+        .presets {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .preset-btn {
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85em;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .preset-btn.active {
+            background: #667eea;
+        }
+        
+        .geometry-info {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-top: 15px;
+        }
+        
+        .geometry-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+        
+        .geometry-description {
+            line-height: 1.5;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 968px) {
+            .course-container {
+                flex-direction: column;
+            }
+            
+            .lessons-panel, .content-panel {
+                width: 100%;
+            }
+            
+            .presets {
+                flex-direction: column;
+            }
+            
+            .preset-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Academia Científica</h1>
+            <p>Cosmología</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Volver al inicio</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="course-container">
+        <aside class="lessons-panel">
+            <h2>Temario</h2>
+            <ul class="lessons-list"></ul>
+        </aside>
+
+        <section class="content-panel">
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/VIDEO_ID_1" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-lesson-title">Gravedad Newtoniana</h2>
+            <div id="current-lesson-desc">
+                Introducción a la gravedad newtoniana aplicada a cosmología...
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const courseData = {
+            id: 3,
+            title: "Cosmología",
+            lessons: [
+                {
+                    id: 1,
+                    title: "Gravedad Newtoniana",
+                    duration: "50 min",
+                    videoId: "VIDEO_ID_1",
+                    description: "Fundamentos de la gravedad newtoniana en cosmología",
+                    subtopics: [
+                        {
+                            title: "Teorema de Newton",
+                            duration: "15 min",
+                            description: `<h3>Teorema de Newton</h3>
+                            <p>Es perfectamente posible introducirse a la cosmología sin haber aún aprendido sobre relatividad general.
+                            De hecho, la ecuación más crucial, la ecuación de Friedmann, que describe la expansión del universo, resulta ser 
+                            la misma cuando se deriva de la teoría de la gravedad de Newton que cuando se deriva de las ecuaciones de la relatividad general (para Universo homogéneo e isotrópico).</p>
+                            
+                            <div class="simulation-container" style="background: #f8f9fa; color: #333;">
+                                <h3 class="simulation-title" style="color: #333; -webkit-text-fill-color: #333;">Simulación Interactiva: Gravedad Newtoniana</h3>
+                                <p style="text-align: center; color: #666; margin-bottom: 15px; font-size: 14px;">
+                                    Arrastra la masa para moverla alrededor del punto central
+                                </p>
+                                
+                                <div class="canvas-wrapper" style="background: #fff;">
+                                    <canvas id="gravityCanvas" class="grab"></canvas>
+                                </div>
+                                
+                                <div class="sim-controls" style="background: #fff; color: #333;">
+                                    <div class="control-group">
+                                        <label style="color: #555;">
+                                            Radio (r)
+                                            <span class="value-display" id="radiusValue">120 px</span>
+                                        </label>
+                                        <input type="range" id="radiusSlider" min="50" max="200" value="120">
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label style="color: #555;">
+                                            Tamaño de masa m
+                                            <span class="value-display" id="massSizeValue">8 px</span>
+                                        </label>
+                                        <input type="range" id="massSize" min="5" max="15" value="8">
+                                    </div>
+                                    
+                                    <div style="background: linear-gradient(135deg, #667eea15, #764ba215); padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #667eea;">
+                                        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px;">
+                                            <span style="color: #666;">Posición X:</span>
+                                            <span style="color: #667eea; font-weight: 700;" id="massX">0</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px;">
+                                            <span style="color: #666;">Posición Y:</span>
+                                            <span style="color: #667eea; font-weight: 700;" id="massY">0</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px;">
+                                            <span style="color: #666;">Distancia:</span>
+                                            <span style="color: #667eea; font-weight: 700;" id="distance">0 px</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px;">
+                                            <span style="color: #666;">Ángulo:</span>
+                                            <span style="color: #667eea; font-weight: 700;" id="angle">0°</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p><strong>Teorema fundamental:</strong> Este teorema establece que "una partícula dentro de una cáscara esférica no experimenta fuerza gravitacional neta" y se deriva de:</p>
+
+                            <h4>Demostración</h4>
+                            \\[
+                            \\mathbf{F} = -Gm \\int \\frac{\\rho(\\mathbf{r}')(\\mathbf{r} - \\mathbf{r}')}{|\\mathbf{r} - \\mathbf{r}'|^3} d^3r'
+                            \\]
+                            <p>Para una cáscara de radio R y densidad superficial σ:</p>
+                            \\[
+                            \\mathbf{F} = -2\\pi Gm\\sigma R^2 \\int_0^\\pi \\frac{(r - R\\cos\\theta)\\sin\\theta}{(R^2 + r^2 - 2Rr\\cos\\theta)^{3/2}} d\\theta = 0
+                            \\]
+                            <p>Lo cual da 0, debido a la simetría.</p>
+                            <h4>Implicaciones Cosmológicas</h4>
+                            <ul>
+                                <li>Permite ignorar masa exterior al radio de interés</li>
+                                <li>El universo puede modelarse como capas esféricas concéntricas</li>
+                                <li>Consistente con el principio cosmológico (homogeneidad)</li>
+                            </ul>
+
+                            <h4>Para Distribuciones Esféricas</h4>
+                            <p> El caso de importancia en este curso y con el cual se llevará a cabo, son las simetrías esféricas, ya
+                            que en ellas encontramos la simetría que buscamos. </p>
+                            \\[
+                            \\mathbf{F}(r) = -\\frac{GM(r)m}{r^2}
+                            \\]
+                            <p>Donde la masa correspondiente al cuerpo estudiado corrresponde a: 
+                            \\(M(r) = 4\\pi \\int_0^r \\rho(r')r'^2 dr'\\)</p>
+
+                            <p>En un universo homogéneo (\\(\\rho\\) constante):</p>
+                            \\[
+                            M(r) = \\frac{4\\pi}{3}\\rho r^3 \\quad \\Rightarrow \\quad \\mathbf{F}(r) = -\\frac{4\\pi G\\rho}{3}m\\mathbf{r}
+                            \\]`,
+                            hasSimulation: 'gravity'
+                        },
+                        {
+                            title: "Ecuación de Friedmann",
+                            duration: "20 min",
+                            description: `<h3>Ecuación de Friedmann</h3>
+                            <p>Las ecuaciones de Friedmann describen la expansión del Universo, por lo que es la piedra angular en estos
+                                estudios. Uno de los retos a los cuales se enfrentan los cosmólogos es resolver esta ecuación mediante
+                                asumir distintos parámetros del Universo. Para poder derivar esta ecuación mediante Newton, consideremos:</p>
+                            <ul>
+                                <li>Una partícula de prueba m en la superficie de una esfera de radio físico \\(r(t) = a(t)x\\)</li>
+                                <li>Masa interior: \\(M = \\frac{4\\pi}{3}\\rho(t)r^3(t)\\)</li>
+                                <li>Energía total por unidad de masa: \\(U/m = \\text{const}\\)</li>
+                            </ul>
+
+                            <p>La ecuación que describe como cambia la separación r, puede ser derivada de la conservación de la energía:
+                            \\(U=T+V=\\frac{1}{2}m\\dot{r}^2 - \\frac{GmM}{r}=\\frac{1}{2}m\\dot{r}^2 - \\frac{GmM}{r}\\)</p>
+                            \\[
+                            \\frac{U}{m} = \\frac{1}{2}\\dot{r}^2 - \\frac{GM}{r}
+                            \\]
+                            <p>Sustituyendo \\(r = ax\\) y \\(M = \\frac{4\\pi}{3}\\rho a^3x^3\\):</p>
+                            \\[
+                            \\frac{U}{m} = \\frac{1}{2}(\\dot{a}x)^2 - \\frac{G}{ax}\\frac{4\\pi}{3}\\rho a^3x^3 = x^2\\left(\\frac{1}{2}\\dot{a}^2 - \\frac{4\\pi G}{3}\\rho a^2\\right)
+                            \\]
+                            <p>Definiendo \\(k \\equiv -\\frac{2U}{mx^2c^2}\\) (adimensional):</p>
+                            \\[
+                            \\left(\\frac{\\dot{a}}{a}\\right)^2 = \\frac{8\\pi G}{3}\\rho - \\frac{kc^2}{a^2}
+                            \\]
+                            <p>Esta es la forma estándar de la ecuación de Friedmann y aparecerá con frecuencia a lo largo de este curso.
+                            En esta expresión, k debe ser independiente de x, ya que todos los demás términos de la ecuación lo son; de lo 
+                            contrario, no se mantendrá la homogeneidad. De hecho, aprendemos que la homogeneidad requiere que la cantidad U, aunque constante para una partícula dada, cambie si observamos diferentes separaciones x.</p>
+                            <h4>Interpretación Física</h4>
+                            <p>Esta ecuación consta de 3 componentes fundamentales para poder entender como se expande el Universo.</p>
+                            <ul>
+                                <li>\\(\\dot{a}/a\\): Tasa de expansión (parámetro de Hubble), lo cual representa la velocidad de expansión del universo en un instante dado, cuanto mayor sea, más rápido se expande.</li>
+                                <li>\\(\\frac{8\\pi G}{3}\\rho\\): Fuente gravitacional, este término proviene del contenido energético del universo, a través de la densidad \\(\\rho\\). La cual incluye contribuciones de
+                                    materia bariónica (átomos, galaxias), materia oscura, radiación, energía oscura. Físicamente este término tiende a frenar la expansión, debido a la atracción gravitacional del contenido
+                                    material del Universo.</li>
+                                <li>\\(k/a^2\\): Término de curvatura/energía total, describe como la geometría del espacio afecta la expansión, su dependencia de \\(1/{a}^2\\) muestra que el efecto de la curvatura disminuye
+                                    con el tiempo a medida que el Universo se expande.</li>
+                            </ul>
+
+                            <p><strong>Valores posibles de la curvatura k:</strong></p>
+                            <p>Se observa que para los 3 casos posibles, las geometrías que puede tener el Universo son muy disntitas entre sí, lo cual da pie al estudio en específico de este parámetro en la siguiente sección.</p>
+                            <ul>
+                                <li>\\(k > 0\\): Energía negativa (Universo cerrado y finito).</li>
+                                <li>\\(k = 0\\): Energía cero (Universo plano e infinito).</li>
+                                <li>\\(k < 0\\): Energía positiva (Universo abierto e infinito).</li>
+                            </ul>`
+                        },
+                        {
+                            title: "Parámetro de Curvatura",
+                            duration: "15 min",
+                            description: `<h3>Parámetro de Curvatura k</h3>
+                            
+                            <div class="simulation-container" style="background: #f8f9fa; color: #333;">
+                                <h3 class="simulation-title" style="color: #2c3e50; -webkit-text-fill-color: #2c3e50; background: none; font-weight: 600;">Simulación Interactiva: Geometría del Universo</h3>
+                                <p class="simulation-subtitle" style="color: #666;">Explora cómo la curvatura afecta la geometría espacial</p>
+                                
+                                <div class="canvas-wrapper" style="background: #ffffff; border: 1px solid #e0e0e0;">
+                                    <canvas id="spaceCanvas" width="800" height="400"></canvas>
+                                </div>
+                                
+                                <div class="sim-controls" style="background: #ffffff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                    <div class="control-group">
+                                        <label style="color: #555; font-weight: 600;">
+                                            Parámetro de Curvatura (k)
+                                            <span class="value-display" style="color: #3e41df;" id="kValue">0.00</span>
+                                        </label>
+                                        <input type="range" id="curvatureSlider" min="-10" max="10" value="0" step="0.1" style="background: linear-gradient(to right, #ddd 0%, #ddd 100%);">
+                                        <div class="presets">
+                                            <button class="preset-btn" onclick="setK(-5)" style="background: #fff; border: 2px solid #3e41df; color: #3e41df;">k < 0 (Hiperbólico)</button>
+                                            <button class="preset-btn active" onclick="setK(0)" style="background: #3e41df; border: 2px solid #3e41df; color: #fff;">k = 0 (Plano)</button>
+                                            <button class="preset-btn" onclick="setK(5)" style="background: #fff; border: 2px solid #3e41df; color: #3e41df;">k > 0 (Esférico)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="geometry-info" id="geometryInfo" style="background: #e3f2fd; border-left: 4px solid #3e41df;">
+                                    <div class="geometry-title" style="color: #2c3e50;">Espacio Plano (k = 0)</div>
+                                    <div class="geometry-description" style="color: #555;">
+                                        Geometría euclidiana. Las líneas paralelas permanecen paralelas. 
+                                        La suma de los ángulos de un triángulo es exactamente 180°. 
+                                        Este es el tipo de geometría del universo si la densidad de energía es igual a la densidad crítica.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h4>Normalización Matemática</h4>
+                            <p>Tres convenciones comunes:</p>
+                            <ol>
+                                <li>\\(k \\in \\{-1, 0, 1\\}\\) con \\(a\\) dimensional (ej. en Mpc)</li>
+                                <li>\\(k\\) dimensional (en Mpc\\(^{-2}\\)) con \\(a\\) adimensional</li>
+                                <li>Reescalado: \\(\\hat{a} = a/\\sqrt{|k|}\\)</li>
+                            </ol>
+
+                            <p>Con reescalado, la ecuación de Friedmann se convierte en:</p>
+                            \\[
+                            \\left(\\frac{\\dot{\\hat{a}}}{\\hat{a}}\\right)^2 = \\frac{8\\pi G}{3}\\rho \\pm \\frac{1}{\\hat{a}^2}
+                            \\]
+
+                            <h4>Significado Geométrico</h4>
+                            <table border="1" style="margin: 20px 0; border-collapse: collapse; width: 100%;">
+                                <tr style="background-color: #f0f0f0;">
+                                    <th style="padding: 8px;">k</th>
+                                    <th style="padding: 8px;">Geometría</th>
+                                    <th style="padding: 8px;">Volumen</th>
+                                    <th style="padding: 8px;">Destino</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; text-align: center;">+1</td>
+                                    <td style="padding: 8px;">Esférica</td>
+                                    <td style="padding: 8px;">Finito</td>
+                                    <td style="padding: 8px;">Colapso</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; text-align: center;">0</td>
+                                    <td style="padding: 8px;">Plana</td>
+                                    <td style="padding: 8px;">Infinito</td>
+                                    <td style="padding: 8px;">Expansión eterna</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; text-align: center;">-1</td>
+                                    <td style="padding: 8px;">Hiperbólica</td>
+                                    <td style="padding: 8px;">Infinito</td>
+                                    <td style="padding: 8px;">Expansión eterna</td>
+                                </tr>
+                            </table>
+
+                            <h4>Relación con la Energía Total</h4>
+                            \\[
+                            k = -\\frac{2U}{mc^2x^2}
+                            \\]
+                            <ul>
+                                <li>\\(U > 0\\) (energía positiva) ⇒ \\(k < 0\\) (universo abierto)</li>
+                                <li>\\(U = 0\\) ⇒ \\(k = 0\\) (universo crítico)</li>
+                                <li>\\(U < 0\\) ⇒ \\(k > 0\\) (universo cerrado)</li>
+                            </ul>`,
+                            hasSimulation: 'curvature'
+                           }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Ecuación del Fluido",
+                    duration: "40 min",
+                    videoId: "VIDEO_ID_2",
+                    description: "Termodinámica del universo en expansión",
+                    subtopics: [
+                        {
+                            title: "Primera Ley de la Termodinámica",
+                            duration: "15 min",
+                            description: `<h3>Primera Ley de la Termodinámica</h3>
+                            <h4>Origen Termodinámico</h4>
+                            <p>Primera ley para procesos adiabáticos (\\(\\delta Q = 0\\)):</p>
+                            \\[
+                            dE = -pdV
+                            \\]
+
+                            <p>Para un volumen comóvil \\(V = V_0 a^3\\):</p>
+                            \\[
+                            d(\\rho c^2 V) = -pdV
+                            \\]
+
+                            <h4>Desarrollo</h4>
+                            \\[
+                            Vd\\rho + \\rho dV = -\\frac{p}{c^2}dV
+                            \\]
+                            \\[
+                            \\frac{d\\rho}{\\rho + p/c^2} = -\\frac{dV}{V} = -3\\frac{da}{a}
+                            \\]
+
+                            <h4>Ecuación de Continuidad</h4>
+                            \\[
+                            \\dot{\\rho} + 3\\frac{\\dot{a}}{a}\\left(\\rho + \\frac{p}{c^2}\\right) = 0
+                            \\]
+
+                            <p>Esta ecuación describe la conservación de energía en un universo en expansión.</p>`
+                        },
+                        {
+                            title: "Ecuaciones de Estado",
+                            duration: "15 min",
+                            description: `<h3>Ecuaciones de Estado</h3>
+                            <p>La ecuación de estado relaciona presión y densidad:</p>
+                            \\[
+                            p = w\\rho c^2
+                            \\]
+
+                            <h4>Casos Especiales</h4>
+                            <table border="1" style="margin: 20px 0; border-collapse: collapse; width: 100%;">
+                                <tr style="background-color: #f0f0f0;">
+                                    <th style="padding: 8px;">Tipo</th>
+                                    <th style="padding: 8px;">Ecuación de Estado</th>
+                                    <th style="padding: 8px;">w</th>
+                                    <th style="padding: 8px;">Solución</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Materia</td>
+                                    <td style="padding: 8px;">\\(p = 0\\)</td>
+                                    <td style="padding: 8px; text-align: center;">0</td>
+                                    <td style="padding: 8px;">\\(\\rho \\propto a^{-3}\\)</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Radiación</td>
+                                    <td style="padding: 8px;">\\(p = \\rho c^2/3\\)</td>
+                                    <td style="padding: 8px; text-align: center;">1/3</td>
+                                    <td style="padding: 8px;">\\(\\rho \\propto a^{-4}\\)</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Energía Oscura</td>
+                                    <td style="padding: 8px;">\\(p = -\\rho c^2\\)</td>
+                                    <td style="padding: 8px; text-align: center;">-1</td>
+                                    <td style="padding: 8px;">\\(\\rho = \\text{const}\\)</td>
+                                </tr>
+                            </table>
+
+                            <h4>Derivación de Soluciones</h4>
+                            <p>Para \\(p = w\\rho c^2\\):</p>
+                            \\[
+                            \\dot{\\rho} + 3\\frac{\\dot{a}}{a}\\rho(1 + w) = 0
+                            \\]
+                            \\[
+                            \\frac{d\\rho}{\\rho} = -3(1+w)\\frac{da}{a}
+                            \\]
+                            \\[
+                            \\rho \\propto a^{-3(1+w)}
+                            \\]`
+                        },
+                        {
+                            title: "Conservación de Energía",
+                            duration: "10 min",
+                            description: `<h3>Conservación de Energía</h3>
+                            <h4>Interpretación Física</h4>
+                            <p>La ecuación del fluido cosmológico:</p>
+                            \\[
+                            \\dot{\\rho} + 3\\frac{\\dot{a}}{a}\\left(\\rho + \\frac{p}{c^2}\\right) = 0
+                            \\]
+
+                            <p>tiene dos términos importantes:</p>
+                            <ul>
+                                <li><strong>\\(\\dot{\\rho}\\):</strong> Cambio en la densidad de energía</li>
+                                <li><strong>\\(3\\frac{\\dot{a}}{a}\\left(\\rho + \\frac{p}{c^2}\\right)\\):</strong> Trabajo realizado por la expansión</li>
+                            </ul>
+
+                            <h4>Análisis por Componente</h4>
+                            <p><strong>Materia (p = 0):</strong></p>
+                            <ul>
+                                <li>La dilución es puramente geométrica: \\(\\rho \\propto a^{-3}\\)</li>
+                                <li>La energía total \\(E = \\rho c^2 V\\) se conserva si \\(V \\propto a^3\\)</li>
+                            </ul>
+
+                            <p><strong>Radiación (\\(p = \\rho c^2/3\\)):</strong></p>
+                            <ul>
+                                <li>Dilución geométrica + corrimiento al rojo: \\(\\rho \\propto a^{-4}\\)</li>
+                                <li>Factor extra \\(a^{-1}\\) viene del estiramiento de longitudes de onda</li>
+                            </ul>
+
+                            <p><strong>Energía Oscura (\\(p = -\\rho c^2\\)):</strong></p>
+                            <ul>
+                                <li>Densidad constante a pesar de la expansión</li>
+                                <li>La presión negativa "genera" energía</li>
+                            </ul>`
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "Ecuación de Aceleración",
+                    duration: "35 min",
+                    videoId: "VIDEO_ID_3",
+                    description: "Dinámica de la expansión cósmica",
+                    subtopics: [
+                        {
+                            title: "Derivación Completa",
+                            duration: "15 min",
+                            description: `<h3>Derivación de la Ecuación de Aceleración</h3>
+                            <h4>Método 1: Desde la Ecuación de Friedmann</h4>
+                            <p>Diferenciamos la ecuación de Friedmann respecto al tiempo:</p>
+                            \\[
+                            \\frac{d}{dt}\\left[\\left(\\frac{\\dot{a}}{a}\\right)^2\\right] = \\frac{8\\pi G}{3}\\dot{\\rho} + \\frac{2kc^2\\dot{a}}{a^3}
+                            \\]
+
+                            <p>El lado izquierdo:</p>
+                            \\[
+                            2\\frac{\\dot{a}}{a}\\left(\\frac{\\ddot{a}}{a} - \\frac{\\dot{a}^2}{a^2}\\right) = 2H(\\ddot{a}/a - H^2)
+                            \\]
+
+                            <p>Usando la ecuación del fluido \\(\\dot{\\rho} = -3H(\\rho + p/c^2)\\):</p>
+                            \\[
+                            2H(\\ddot{a}/a - H^2) = -8\\pi GH\\left(\\rho + \\frac{p}{c^2}\\right) + \\frac{2kc^2H}{a^2}
+                            \\]
+
+                            <p>Sustituyendo \\(H^2 = \\frac{8\\pi G}{3}\\rho - \\frac{kc^2}{a^2}\\):</p>
+                            \\[
+                            \\frac{\\ddot{a}}{a} = -\\frac{4\\pi G}{3}\\left(\\rho + \\frac{3p}{c^2}\\right)
+                            \\]`
+                        },
+                        {
+                            title: "Interpretación Relativista",
+                            duration: "10 min",
+                            description: `<h3>Interpretación Relativista</h3>
+                            <h4>Densidad Gravitacional Efectiva</h4>
+                            <p>El término \\(\\rho + 3p/c^2\\) aparece en RG como la traza del tensor energía-momento:</p>
+                            \\[
+                            T^\\mu_\\mu = -\\rho + 3p
+                            \\]
+
+                            <h4>¿Por qué la Presión Gravita?</h4>
+                            <p>En Relatividad General:</p>
+                            <ul>
+                                <li>La presión es una fuente de gravedad (no solo la densidad)</li>
+                                <li>\\(\\rho + 3p/c^2\\) es la "densidad gravitacional efectiva"</li>
+                                <li>Presión positiva aumenta la atracción gravitacional</li>
+                                <li>Presión negativa (como en \\(\\Lambda\\)) causa repulsión</li>
+                            </ul>
+
+                            <h4>Condición para Aceleración</h4>
+                            \\[
+                            \\ddot{a} > 0 \\quad \\Leftrightarrow \\quad \\rho + \\frac{3p}{c^2} < 0 \\quad \\Leftrightarrow \\quad w < -\\frac{1}{3}
+                            \\]
+
+                            <p>Ejemplos:</p>
+                            <ul>
+                                <li>Materia: \\(w = 0\\) → Desaceleración</li>
+                                <li>Radiación: \\(w = 1/3\\) → Desaceleración</li>
+                                <li>Energía Oscura: \\(w = -1\\) → Aceleración</li>
+                            </ul>`
+                        },
+                        {
+                            title: "Análisis de Casos",
+                            duration: "10 min",
+                            description: `<h3>Análisis de Casos Específicos</h3>
+                            <h4>Universo Dominado por Materia</h4>
+                            <p>Con \\(p = 0\\):</p>
+                            \\[
+                            \\frac{\\ddot{a}}{a} = -\\frac{4\\pi G}{3}\\rho < 0
+                            \\]
+                            <p>Resultado: Siempre desacelera</p>
+
+                            <h4>Universo Dominado por Radiación</h4>
+                            <p>Con \\(p = \\rho c^2/3\\):</p>
+                            \\[
+                            \\frac{\\ddot{a}}{a} = -\\frac{4\\pi G}{3}\\left(\\rho + \\frac{3\\rho c^2/3}{c^2}\\right) = -\\frac{8\\pi G}{3}\\rho < 0
+                            \\]
+                            <p>Resultado: Desacelera más fuerte que la materia</p>
+
+                            <h4>Universo con Constante Cosmológica</h4>
+                            <p>Con \\(p = -\\rho c^2\\):</p>
+                            \\[
+                            \\frac{\\ddot{a}}{a} = -\\frac{4\\pi G}{3}(\\rho - 3\\rho) = \\frac{8\\pi G}{3}\\rho > 0
+                            \\]
+                            <p>Resultado: ¡Acelera!</p>
+
+                            <h4>Comparación de Efectos</h4>
+                            <table border="1" style="margin: 20px 0; border-collapse: collapse; width: 100%;">
+                                <tr style="background-color: #f0f0f0;">
+                                    <th style="padding: 8px;">Componente</th>
+                                    <th style="padding: 8px;">\\(\\rho + 3p/c^2\\)</th>
+                                    <th style="padding: 8px;">Efecto</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Materia</td>
+                                    <td style="padding: 8px;">\\(\\rho\\)</td>
+                                    <td style="padding: 8px;">Desaceleración</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Radiación</td>
+                                    <td style="padding: 8px;">\\(2\\rho\\)</td>
+                                    <td style="padding: 8px;">Desaceleración fuerte</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Energía Oscura</td>
+                                    <td style="padding: 8px;">\\(-2\\rho\\)</td>
+                                    <td style="padding: 8px;">Aceleración</td>
+                                </tr>
+                            </table>`
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "Conexión con Relatividad General",
+                    duration: "30 min",
+                    videoId: "VIDEO_ID_4",
+                    description: "Limitaciones y conexiones con la teoría completa",
+                    subtopics: [
+                        {
+                            title: "Limitaciones Newtonianas",
+                            duration: "10 min",
+                            description: `<h3>Limitaciones del Enfoque Newtoniano</h3>
+                            <h4>Lo que Falla</h4>
+                            <p>El enfoque newtoniano <strong>no puede</strong>:</p>
+                            <ul>
+                                <li>Explicar por qué k debe ser uniforme en todo el espacio</li>
+                                <li>Describir perturbaciones inhomogéneas correctamente</li>
+                                <li>Incorporar efectos no estáticos (ondas gravitacionales)</li>
+                                <li>Distinguir entre curvatura espacial y temporal</li>
+                                <li>Justificar rigurosamente las ecuaciones de estado relativistas</li>
+                            </ul>
+
+                            <h4>Lo que Funciona</h4>
+                            <p>Para un universo FLRW (Friedmann-Lemaître-Robertson-Walker):</p>
+                            <ul>
+                                <li>Las ecuaciones newtonianas son <strong>idénticas</strong> a las de RG</li>
+                                <li>La intuición física es correcta</li>
+                                <li>Los resultados cuantitativos son exactos</li>
+                            </ul>
+
+                            <h4>Razón de la Coincidencia</h4>
+                            <p>La homogeneidad e isotropía imponen restricciones tan fuertes que:</p>
+                            <ul>
+                                <li>Solo quedan dos grados de libertad: \\(a(t)\\) y \\(k\\)</li>
+                                <li>La RG se reduce esencialmente a un problema 1D</li>
+                                <li>El análisis newtoniano capta la esencia física</li>
+                            </ul>`
+                        },
+                        {
+                            title: "Ecuaciones de Einstein",
+                            duration: "10 min",
+                            description: `<h3>Ecuaciones de Einstein</h3>
+                            <h4>Forma General</h4>
+                            \\[
+                            G_{\\mu\\nu} = \\frac{8\\pi G}{c^4}T_{\\mu\\nu}
+                            \\]
+
+                            <p>Donde:</p>
+                            <ul>
+                                <li>\\(G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu}\\): Tensor de Einstein (geometría)</li>
+                                <li>\\(T_{\\mu\\nu}\\): Tensor energía-momento (materia/energía)</li>
+                                <li>\\(R_{\\mu\\nu}\\): Tensor de Ricci</li>
+                                <li>\\(R\\): Escalar de curvatura</li>
+                            </ul>
+
+                            <h4>Para la Métrica FLRW</h4>
+                            <p>La métrica:</p>
+                            \\[
+                            ds^2 = -c^2dt^2 + a^2(t)\\left[\\frac{dr^2}{1-kr^2} + r^2(d\\theta^2 + \\sin^2\\theta d\\phi^2)\\right]
+                            \\]
+
+                            <p>Produce las ecuaciones de Friedmann:</p>
+                            \\[
+                            \\left(\\frac{\\dot{a}}{a}\\right)^2 = \\frac{8\\pi G}{3}\\rho - \\frac{kc^2}{a^2}
+                            \\]
+                            \\[
+                            \\frac{\\ddot{a}}{a} = -\\frac{4\\pi G}{3}\\left(\\rho + \\frac{3p}{c^2}\\right)
+                            \\]
+
+                            <p>¡Exactamente las mismas ecuaciones que obtuvimos con Newton!</p>`
+                        },
+                        {
+                            title: "Ventajas de RG",
+                            duration: "10 min",
+                            description: `<h3>Ventajas de la Relatividad General</h3>
+                            <h4>Conceptos que Solo RG Explica</h4>
+                            
+                            <p><strong>1. Naturaleza de k:</strong></p>
+                            <ul>
+                                <li>En Newton: k es una constante de integración arbitraria</li>
+                                <li>En RG: k es la curvatura espacial intrínseca</li>
+                                <li>RG explica por qué k debe ser el mismo en todas partes</li>
+                            </ul>
+
+                            <p><strong>2. Ondas Gravitacionales:</strong></p>
+                            <ul>
+                                <li>Perturbaciones de la métrica que se propagan a velocidad c</li>
+                                <li>No tienen análogo en gravedad newtoniana</li>
+                                <li>Detectadas experimentalmente (LIGO, 2015)</li>
+                            </ul>
+
+                            <p><strong>3. Horizonte de Eventos:</strong></p>
+                            <ul>
+                                <li>Distancia máxima de la que podemos recibir información</li>
+                                <li>Concepto inherentemente relativista</li>
+                                <li>Relacionado con la velocidad finita de la luz</li>
+                            </ul>
+
+                            <p><strong>4. Corrimiento al Rojo Cosmológico:</strong></p>
+                            \\[
+                            1 + z = \\frac{a(t_0)}{a(t_e)}
+                            \\]
+                            <ul>
+                                <li>En RG: Estiramiento del espacio-tiempo</li>
+                                <li>En Newton: Interpretación como efecto Doppler (incompleta)</li>
+                            </ul>
+
+                            <h4>Marco Conceptual Completo</h4>
+                            <p>RG proporciona:</p>
+                            <ul>
+                                <li>Unificación de espacio, tiempo y gravedad</li>
+                                <li>Principio de equivalencia</li>
+                                <li>Geometría dinámica del espacio-tiempo</li>
+                                <li>Marco para teoría cuántica de campos en espacio curvo</li>
+                            </ul>`
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    title: "Aplicaciones y Problemas",
+                    duration: "45 min",
+                    videoId: "VIDEO_ID_5",
+                    description: "Ejemplos resueltos y casos prácticos",
+                    subtopics: [
+                        {
+                            title: "Evolución Temporal",
+                            duration: "15 min",
+                            description: `<h3>Evolución Temporal del Factor de Escala</h3>
+                            <h4>Universo Dominado por Materia (k=0)</h4>
+                            <p>Con \\(\\rho \\propto a^{-3}\\) y k = 0:</p>
+                            \\[
+                            \\left(\\frac{\\dot{a}}{a}\\right)^2 = \\frac{8\\pi G}{3}\\rho_0 a_0^3 a^{-3}
+                            \\]
+
+                            <p>Solución:</p>
+                            \\[
+                            a(t) \\propto t^{2/3}
+                            \\]
+                            \\[
+                            H(t) = \\frac{\\dot{a}}{a} = \\frac{2}{3t}
+                            \\]
+
+                            <h4>Universo Dominado por Radiación (k=0)</h4>
+                            <p>Con \\(\\rho \\propto a^{-4}\\):</p>
+                            \\[
+                            a(t) \\propto t^{1/2}
+                            \\]
+                            \\[
+                            H(t) = \\frac{1}{2t}
+                            \\]
+
+                            <h4>Universo con Constante Cosmológica</h4>
+                            <p>Con \\(\\rho = \\rho_\\Lambda =\\) constante y k = 0:</p>
+                            \\[
+                            \\left(\\frac{\\dot{a}}{a}\\right)^2 = \\frac{8\\pi G}{3}\\rho_\\Lambda \\equiv H_\\Lambda^2
+                            \\]
+
+                            <p>Solución:</p>
+                            \\[
+                            a(t) = a_0 e^{H_\\Lambda(t-t_0)}
+                            \\]
+                            <p>¡Expansión exponencial!</p>
+
+                            <h4>Comparación de Escalas</h4>
+                            <table border="1" style="margin: 20px 0; border-collapse: collapse; width: 100%;">
+                                <tr style="background-color: #f0f0f0;">
+                                    <th style="padding: 8px;">Era</th>
+                                    <th style="padding: 8px;">\\(a(t)\\)</th>
+                                    <th style="padding: 8px;">\\(H(t)\\)</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Radiación</td>
+                                    <td style="padding: 8px;">\\(t^{1/2}\\)</td>
+                                    <td style="padding: 8px;">\\(1/(2t)\\)</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Materia</td>
+                                    <td style="padding: 8px;">\\(t^{2/3}\\)</td>
+                                    <td style="padding: 8px;">\\(2/(3t)\\)</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Energía Oscura</td>
+                                    <td style="padding: 8px;">\\(e^{Ht}\\)</td>
+                                    <td style="padding: 8px;">\\(H\\) (constante)</td>
+                                </tr>
+                            </table>`
+                        },
+                        {
+                            title: "Densidad Crítica",
+                            duration: "15 min",
+                            description: `<h3>Densidad Crítica del Universo</h3>
+                            <h4>Definición</h4>
+                            <p>Para k = 0, la ecuación de Friedmann da:</p>
+                            \\[
+                            H^2 = \\frac{8\\pi G}{3}\\rho_c
+                            \\]
+
+                            <p>Por lo tanto:</p>
+                            \\[
+                            \\rho_c = \\frac{3H^2}{8\\pi G}
+                            \\]
+
+                            <h4>Valor Actual</h4>
+                            <p>Con \\(H_0 \\approx 70\\) km/s/Mpc:</p>
+                            \\[
+                            \\rho_{c,0} \\approx 9.47 \\times 10^{-27} \\text{ kg/m}^3 \\approx 5.6 \\text{ protones/m}^3
+                            \\]
+
+                            <h4>Parámetro de Densidad</h4>
+                            <p>Se define:</p>
+                            \\[
+                            \\Omega \\equiv \\frac{\\rho}{\\rho_c}
+                            \\]
+
+                            <p>La ecuación de Friedmann se reescribe:</p>
+                            \\[
+                            \\Omega - 1 = \\frac{kc^2}{a^2H^2}
+                            \\]
+
+                            <h4>Interpretación Geométrica</h4>
+                            <ul>
+                                <li>\\(\\Omega > 1\\) ⇒ \\(k > 0\\) → Universo cerrado</li>
+                                <li>\\(\\Omega = 1\\) ⇒ \\(k = 0\\) → Universo plano</li>
+                                <li>\\(\\Omega < 1\\) ⇒ \\(k < 0\\) → Universo abierto</li>
+                            </ul>
+
+                            <h4>Parámetros de Densidad Actuales</h4>
+                            <p>Observaciones (Planck 2018):</p>
+                            <ul>
+                                <li>\\(\\Omega_{m,0} \\approx 0.31\\) (materia)</li>
+                                <li>\\(\\Omega_{\\Lambda,0} \\approx 0.69\\) (energía oscura)</li>
+                                <li>\\(\\Omega_{r,0} \\approx 10^{-4}\\) (radiación)</li>
+                                <li>\\(\\Omega_{\\text{total}} \\approx 1.00\\) (universo plano)</li>
+                            </ul>`
+                        },
+                        {
+                            title: "Problema de la Edad",
+                            duration: "15 min",
+                            description: `<h3>Problema de la Edad del Universo</h3>
+                            <h4>Definición</h4>
+                            <p>La edad del universo es:</p>
+                            \\[
+                            t_0 = \\int_0^{a_0} \\frac{da}{\\dot{a}} = \\int_0^{a_0} \\frac{da}{aH}
+                            \\]
+
+                            <h4>Caso: Solo Materia (k=0)</h4>
+                            <p>Con \\(a(t) = a_0(t/t_0)^{2/3}\\):</p>
+                            \\[
+                            t_0 = \\frac{2}{3H_0}
+                            \\]
+
+                            <p>Para \\(H_0 = 70\\) km/s/Mpc:</p>
+                            \\[
+                            t_0 \\approx 9.3 \\text{ Gyr}
+                            \\]
+
+                            <p><strong>Problema:</strong> ¡Estrellas más viejas tienen ~13 Gyr!</p>
+
+                            <h4>Solución: Energía Oscura</h4>
+                            <p>Para un universo con materia + \\(\\Lambda\\):</p>
+                            \\[
+                            t_0 = \\frac{1}{H_0}\\int_0^1 \\frac{dx}{\\sqrt{\\Omega_m x^{-1} + \\Omega_\\Lambda x^2}}
+                            \\]
+
+                            <p>Con \\(\\Omega_m = 0.31\\) y \\(\\Omega_\\Lambda = 0.69\\):</p>
+                            \\[
+                            t_0 \\approx 13.8 \\text{ Gyr}
+                            \\]
+
+                            <p>¡Consistente con todas las observaciones!</p>
+
+                            <h4>Tiempo de Hubble</h4>
+                            <p>Se define:</p>
+                            \\[
+                            t_H \\equiv \\frac{1}{H_0} \\approx 14.0 \\text{ Gyr}
+                            \\]
+
+                            <p>Relación con la edad real:</p>
+                            <ul>
+                                <li>Solo materia: \\(t_0 = (2/3)t_H\\)</li>
+                                <li>Solo radiación: \\(t_0 = (1/2)t_H\\)</li>
+                                <li>Con \\(\\Lambda\\): \\(t_0 \\approx 0.96 t_H\\)</li>
+                            </ul>`
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function initGravitySimulation() {
+            const canvas = document.getElementById('gravityCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 400;
+            
+            let centerX = canvas.width / 2;
+            let centerY = canvas.height / 2;
+            let radius = 120;
+            let massSize = 8;
+            let massAngle = -Math.PI / 4;
+            let isDragging = false;
+            
+            const radiusSlider = document.getElementById('radiusSlider');
+            const radiusValue = document.getElementById('radiusValue');
+            const massSizeSlider = document.getElementById('massSize');
+            const massSizeValue = document.getElementById('massSizeValue');
+            
+            if (radiusSlider) {
+                radiusSlider.addEventListener('input', (e) => {
+                    radius = parseInt(e.target.value);
+                    radiusValue.textContent = radius + ' px';
+                    draw();
+                });
+            }
+            
+            if (massSizeSlider) {
+                massSizeSlider.addEventListener('input', (e) => {
+                    massSize = parseInt(e.target.value);
+                    massSizeValue.textContent = massSize + ' px';
+                    draw();
+                });
+            }
+            
+            function getMousePos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+            
+            function isNearMass(x, y) {
+                const massX = centerX + radius * Math.cos(massAngle);
+                const massY = centerY + radius * Math.sin(massAngle);
+                const distance = Math.sqrt((x - massX) ** 2 + (y - massY) ** 2);
+                return distance < massSize + 10;
+            }
+            
+            canvas.addEventListener('mousedown', (e) => {
+                const pos = getMousePos(e);
+                if (isNearMass(pos.x, pos.y)) isDragging = true;
+            });
+            
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const pos = getMousePos(e);
+                if (isNearMass(pos.x, pos.y)) isDragging = true;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const pos = getMousePos(e);
+                    massAngle = Math.atan2(pos.y - centerY, pos.x - centerX);
+                    draw();
+                }
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (isDragging) {
+                    const pos = getMousePos(e);
+                    massAngle = Math.atan2(pos.y - centerY, pos.x - centerX);
+                    draw();
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => isDragging = false);
+            canvas.addEventListener('touchend', () => isDragging = false);
+            canvas.addEventListener('mouseleave', () => isDragging = false);
+            
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                gradient.addColorStop(0, '#b8c5d6');
+                gradient.addColorStop(1, '#8a9bb0');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#5a6b7f';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Contributing', centerX, centerY - 8);
+                ctx.fillText('mass', centerX, centerY + 8);
+                
+                const massX = centerX + radius * Math.cos(massAngle);
+                const massY = centerY + radius * Math.sin(massAngle);
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(massX, massY);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                
+                const midX = centerX + (radius / 2) * Math.cos(massAngle);
+                const midY = centerY + (radius / 2) * Math.sin(massAngle);
+                ctx.fillStyle = '#333';
+                ctx.font = 'italic 16px Arial';
+                ctx.fillText('r', midX + 12, midY - 8);
+                
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.fillText('Central point', centerX, centerY + 20);
+                
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(massX, massY, massSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#333';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('mass m', massX + 12, massY - 8);
+                
+                updateInfo(massX, massY);
+            }
+            
+            function updateInfo(massX, massY) {
+                const relX = (massX - centerX).toFixed(1);
+                const relY = (centerY - massY).toFixed(1);
+                const distance = radius.toFixed(1);
+                const angleDeg = (massAngle * 180 / Math.PI).toFixed(1);
+                
+                const massXEl = document.getElementById('massX');
+                const massYEl = document.getElementById('massY');
+                const distanceEl = document.getElementById('distance');
+                const angleEl = document.getElementById('angle');
+                
+                if (massXEl) massXEl.textContent = relX + ' px';
+                if (massYEl) massYEl.textContent = relY + ' px';
+                if (distanceEl) distanceEl.textContent = distance + ' px';
+                if (angleEl) angleEl.textContent = angleDeg + '°';
+            }
+            
+            draw();
+        }
+
+        function initCurvatureSimulation() {
+            const canvas = document.getElementById('spaceCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const curvatureSlider = document.getElementById('curvatureSlider');
+            const kValueDisplay = document.getElementById('kValue');
+            const geometryInfo = document.getElementById('geometryInfo');
+            
+            let k = 0;
+            
+            const geometryData = {
+                negative: {
+                    title: 'Espacio Hiperbólico (k < 0)',
+                    description: 'Geometría de curvatura negativa (silla de montar). Las líneas paralelas divergen. La suma de los ángulos de un triángulo es menor a 180°. Universo abierto que se expande eternamente.'
+                },
+                zero: {
+                    title: 'Espacio Plano (k = 0)',
+                    description: 'Geometría euclidiana. Las líneas paralelas permanecen paralelas. La suma de los ángulos de un triángulo es exactamente 180°. Este es el tipo de geometría del universo si la densidad de energía es igual a la densidad crítica.'
+                },
+                positive: {
+                    title: 'Espacio Esférico (k > 0)',
+                    description: 'Geometría de curvatura positiva (esfera). Las líneas paralelas convergen. La suma de los ángulos de un triángulo es mayor a 180°. Universo cerrado y finito que podría colapsar en el futuro.'
+                }
+            };
+            
+            function updateGeometryInfo() {
+                let info;
+                
+                if (k < -0.5) {
+                    info = geometryData.negative;
+                } else if (k > 0.5) {
+                    info = geometryData.positive;
+                } else {
+                    info = geometryData.zero;
+                }
+                
+                geometryInfo.innerHTML = `
+                    <div class="geometry-title" style="color: #2c3e50;">${info.title}</div>
+                    <div class="geometry-description" style="color: #555;">${info.description}</div>
+                `;
+            }
+            
+            function drawSphere(centerX, centerY, radius) {
+                const segments = 24;
+                const rings = 16;
+                
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.4)';
+                ctx.lineWidth = 1.5;
+                
+                for (let i = 0; i < segments; i++) {
+                    const angle = (i / segments) * Math.PI * 2;
+                    ctx.beginPath();
+                    
+                    for (let j = 0; j <= rings; j++) {
+                        const phi = (j / rings) * Math.PI;
+                        let x = radius * Math.sin(phi) * Math.cos(angle);
+                        let y = radius * Math.sin(phi) * Math.sin(angle);
+                        let z = radius * Math.cos(phi);
+                        
+                        const screenX = centerX + x * 0.866 - y * 0.5;
+                        const screenY = centerY - z + (x * 0.5 + y * 0.866) * 0.5;
+                        
+                        if (j === 0) ctx.moveTo(screenX, screenY);
+                        else ctx.lineTo(screenX, screenY);
+                    }
+                    ctx.stroke();
+                }
+                
+                for (let j = 1; j < rings; j++) {
+                    const phi = (j / rings) * Math.PI;
+                    ctx.beginPath();
+                    
+                    for (let i = 0; i <= segments; i++) {
+                        const angle = (i / segments) * Math.PI * 2;
+                        let x = radius * Math.sin(phi) * Math.cos(angle);
+                        let y = radius * Math.sin(phi) * Math.sin(angle);
+                        let z = radius * Math.cos(phi);
+                        
+                        const screenX = centerX + x * 0.866 - y * 0.5;
+                        const screenY = centerY - z + (x * 0.5 + y * 0.866) * 0.5;
+                        
+                        if (i === 0) ctx.moveTo(screenX, screenY);
+                        else ctx.lineTo(screenX, screenY);
+                    }
+                    ctx.stroke();
+                }
+                
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let i = 0; i <= segments * 2; i++) {
+                    const angle = (i / (segments * 2)) * Math.PI * 2;
+                    const x = radius * Math.cos(angle);
+                    const y = radius * Math.sin(angle);
+                    const z = 0;
+                    
+                    const screenX = centerX + x * 0.866 - y * 0.5;
+                    const screenY = centerY - z + (x * 0.5 + y * 0.866) * 0.5;
+                    
+                    if (i === 0) ctx.moveTo(screenX, screenY);
+                    else ctx.lineTo(screenX, screenY);
+                }
+                ctx.stroke();
+            }
+            
+            function drawFlat(centerX, centerY, size) {
+                const gridSize = size / 15;
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.4)';
+                ctx.lineWidth = 1.5;
+                
+                for (let i = -7; i <= 7; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + i * gridSize, centerY - size/2);
+                    ctx.lineTo(centerX + i * gridSize, centerY + size/2);
+                    ctx.stroke();
+                }
+                
+                for (let i = -7; i <= 7; i++) {
+                    ctx.beginPath();
+                    const y = centerY + i * gridSize * 0.5;
+                    const width = size * (1 - Math.abs(i) * 0.05);
+                    ctx.moveTo(centerX - width/2, y);
+                    ctx.lineTo(centerX + width/2, y);
+                    ctx.stroke();
+                }
+                
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(centerX - size/2, centerY);
+                ctx.lineTo(centerX + size/2, centerY);
+                ctx.stroke();
+            }
+            
+            function drawHyperbolic(centerX, centerY, size) {
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.4)';
+                ctx.lineWidth = 1.5;
+                
+                const segments = 30;
+                const layers = 12;
+                
+                for (let i = 0; i < 16; i++) {
+                    const angle = (i / 16) * Math.PI * 2;
+                    ctx.beginPath();
+                    
+                    for (let j = 0; j <= segments; j++) {
+                        const t = j / segments;
+                        const r = size * 0.3 * Math.sinh(t * 2);
+                        
+                        const x = centerX + r * Math.cos(angle);
+                        const y = centerY + r * Math.sin(angle) * 0.5 - r * 0.3;
+                        
+                        if (j === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+                
+                for (let layer = 1; layer <= layers; layer++) {
+                    const t = layer / layers;
+                    const r = size * 0.3 * Math.sinh(t * 2);
+                    
+                    ctx.beginPath();
+                    for (let i = 0; i <= segments; i++) {
+                        const angle = (i / segments) * Math.PI * 2;
+                        const x = centerX + r * Math.cos(angle);
+                        const y = centerY + r * Math.sin(angle) * 0.5 - r * 0.3;
+                        
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+                
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let i = 0; i <= segments; i++) {
+                    const t = (i / segments - 0.5) * 4;
+                    const x = centerX + t * size * 0.15;
+                    const y = centerY - size * 0.1 * Math.cosh(t);
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            
+            function drawVisualization() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const size = 300;
+                
+                if (k < -0.5) {
+                    drawHyperbolic(centerX, centerY, size);
+                } else if (k > 0.5) {
+                    drawSphere(centerX, centerY, size * 0.4);
+                } else {
+                    drawFlat(centerX, centerY, size);
+                }
+                
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                
+                let title = '';
+                if (k < -0.5) title = 'GEOMETRÍA HIPERBÓLICA';
+                else if (k > 0.5) title = 'GEOMETRÍA ESFÉRICA';
+                else title = 'GEOMETRÍA PLANA';
+                
+                ctx.fillText(title, centerX, 30);
+            }
+            
+            window.setK = function(preset) {
+                curvatureSlider.value = preset;
+                updateVisualization();
+                
+                document.querySelectorAll('.preset-btn').forEach((btn, idx) => {
+                    btn.classList.remove('active');
+                    if ((preset < 0 && idx === 0) || (preset === 0 && idx === 1) || (preset > 0 && idx === 2)) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            function updateVisualization() {
+                k = parseFloat(curvatureSlider.value);
+                kValueDisplay.textContent = k.toFixed(2);
+                
+                drawVisualization();
+                updateGeometryInfo();
+            }
+            
+            curvatureSlider.addEventListener('input', updateVisualization);
+            
+            updateVisualization();
+        }
+
+        function renderLessons() {
+            const lessonsList = document.querySelector('.lessons-list');
+            lessonsList.innerHTML = '';
+
+            courseData.lessons.forEach(lesson => {
+                const lessonItem = document.createElement('li');
+                lessonItem.className = 'lesson-item';
+                
+                const lessonHeader = document.createElement('div');
+                lessonHeader.className = 'lesson-header';
+                lessonHeader.innerHTML = `
+                    <span class="lesson-title">${lesson.title}</span>
+                    <span class="lesson-duration">${lesson.duration}</span>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                `;
+                
+                const subtopicsList = document.createElement('ul');
+                subtopicsList.className = 'subtopics-list';
+
+                lesson.subtopics.forEach(subtopic => {
+                    const subtopicItem = document.createElement('li');
+                    subtopicItem.className = 'subtopic-item';
+                    subtopicItem.innerHTML = `
+                        <span class="subtopic-title">${subtopic.title}</span>
+                        <span class="subtopic-duration">${subtopic.duration}</span>
+                    `;
+                    subtopicItem.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll('.subtopic-item').forEach(item => item.classList.remove('active'));
+                        subtopicItem.classList.add('active');
+                        loadSubtopicContent(lesson, subtopic);
+                    });
+                    subtopicsList.appendChild(subtopicItem);
+                });
+
+                lessonHeader.addEventListener('click', () => {
+                    lessonItem.classList.toggle('expanded');
+                    const icon = lessonHeader.querySelector('.toggle-icon');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+
+                lessonItem.appendChild(lessonHeader);
+                lessonItem.appendChild(subtopicsList);
+                lessonsList.appendChild(lessonItem);
+            });
+        }
+
+        function loadSubtopicContent(lesson, subtopic) {
+            const videoContainer = document.querySelector('.video-container iframe');
+            const lessonTitle = document.getElementById('current-lesson-title');
+            const lessonDesc = document.getElementById('current-lesson-desc');
+            
+            videoContainer.src = `https://www.youtube.com/embed/${lesson.videoId}?autoplay=1`;
+            lessonTitle.textContent = `${lesson.title} - ${subtopic.title}`;
+            lessonDesc.innerHTML = subtopic.description;
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise([lessonDesc]).catch(err => console.log('Error al renderizar MathJax:', err));
+            }
+            
+            if (subtopic.hasSimulation === 'gravity') {
+                setTimeout(initGravitySimulation, 100);
+            } else if (subtopic.hasSimulation === 'curvature') {
+                setTimeout(initCurvatureSimulation, 100);
+            }
+        }
+
+        function waitForMathJax() {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                renderLessons();
+                if (courseData.lessons.length > 0) {
+                    const firstLesson = courseData.lessons[0];
+                    const firstSubtopic = firstLesson.subtopics[0];
+                    loadSubtopicContent(firstLesson, firstSubtopic);
+                    
+                    setTimeout(() => {
+                        const firstSubtopicEl = document.querySelector('.subtopic-item');
+                        if (firstSubtopicEl) firstSubtopicEl.classList.add('active');
+                    }, 100);
+                }
+            } else {
+                setTimeout(waitForMathJax, 100);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', waitForMathJax);
+    </script>
+</body>
+</html>

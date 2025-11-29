@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico 3D - Efecto Fotoeléctrico</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+        #plot {
+            width: 100%;
+            height: 700px;
+        }
+        .caption {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .instructions {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        .instructions button {
+            margin: 5px;
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .instructions button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <strong>Para guardar la imagen:</strong> Haz clic derecho sobre el gráfico → "Guardar imagen como..." o usa el botón de la cámara en la barra superior del gráfico
+        <br>
+        <button onclick="downloadPlot()">📷 Descargar Gráfico (PNG)</button>
+    </div>
+    
+    <div id="plot"></div>
+    
+    <div class="caption">
+        <strong>Figura:</strong> Dependencia de las fotocorrientes con el voltaje retardador y la longitud de onda (365 nm, 405 nm, 436 nm).
+    </div>
+
+    <script>
+        // Datos experimentales
+        const data365 = {
+            voltage: [-4.5, -2.5, -0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5],
+            current: [0.01, 0.00, 1.64, 2.43, 2.44, 2.44, 2.50, 2.59, 2.50, 2.44, 2.55, 2.44, 2.53, 2.51, 2.49, 2.46, 2.58, 2.33]
+        };
+
+        const data405 = {
+            voltage: [-4.5, -2.5, -0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5],
+            current: [0.01, 0.00, 1.86, 3.40, 3.79, 3.96, 3.95, 4.05, 4.04, 3.94, 3.86, 3.77, 3.77, 3.96, 4.02, 4.28, 3.94, 4.21]
+        };
+
+        const data436 = {
+            voltage: [-4.5, -2.5, -0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5],
+            current: [0.00, 0.00, 2.24, 4.79, 5.64, 5.87, 6.16, 5.71, 6.00, 5.92, 5.67, 5.73, 6.00, 5.99, 5.55, 6.06, 5.32, 6.03]
+        };
+
+        // Crear arrays para el eje de longitud de onda
+        const wavelength365 = data365.voltage.map(() => 365);
+        const wavelength405 = data405.voltage.map(() => 405);
+        const wavelength436 = data436.voltage.map(() => 436);
+
+        // Configuración de las trazas
+        const trace365 = {
+            x: data365.voltage,
+            y: wavelength365,
+            z: data365.current,
+            mode: 'lines+markers',
+            type: 'scatter3d',
+            name: '365 nm',
+            line: {
+                color: '#2196F3',
+                width: 4
+            },
+            marker: {
+                size: 3,
+                color: '#2196F3'
+            }
+        };
+
+        const trace405 = {
+            x: data405.voltage,
+            y: wavelength405,
+            z: data405.current,
+            mode: 'lines+markers',
+            type: 'scatter3d',
+            name: '405 nm',
+            line: {
+                color: '#4CAF50',
+                width: 4
+            },
+            marker: {
+                size: 3,
+                color: '#4CAF50'
+            }
+        };
+
+        const trace436 = {
+            x: data436.voltage,
+            y: wavelength436,
+            z: data436.current,
+            mode: 'lines+markers',
+            type: 'scatter3d',
+            name: '436 nm',
+            line: {
+                color: '#FF9800',
+                width: 4
+            },
+            marker: {
+                size: 3,
+                color: '#FF9800'
+            }
+        };
+
+        const data = [trace365, trace405, trace436];
+
+        // Configuración del layout
+        const layout = {
+            title: {
+                text: 'Fotocorriente vs Voltaje Retardador y Longitud de Onda',
+                font: {
+                    size: 18,
+                    family: 'Arial, sans-serif'
+                }
+            },
+            scene: {
+                xaxis: {
+                    title: 'Voltaje Retardador (V)',
+                    titlefont: { size: 14 },
+                    gridcolor: '#e0e0e0',
+                    showbackground: true,
+                    backgroundcolor: '#f5f5f5'
+                },
+                yaxis: {
+                    title: 'Longitud de Onda (nm)',
+                    titlefont: { size: 14 },
+                    gridcolor: '#e0e0e0',
+                    showbackground: true,
+                    backgroundcolor: '#f5f5f5'
+                },
+                zaxis: {
+                    title: 'Fotocorriente (nA)',
+                    titlefont: { size: 14 },
+                    gridcolor: '#e0e0e0',
+                    showbackground: true,
+                    backgroundcolor: '#f5f5f5'
+                },
+                camera: {
+                    eye: {
+                        x: 1.8,
+                        y: 1.8,
+                        z: 1.3
+                    }
+                }
+            },
+            showlegend: true,
+            legend: {
+                x: 0.85,
+                y: 0.95,
+                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                bordercolor: '#333',
+                borderwidth: 1
+            },
+            paper_bgcolor: 'white',
+            plot_bgcolor: 'white',
+            margin: {
+                l: 0,
+                r: 0,
+                t: 50,
+                b: 0
+            }
+        };
+
+        // Configuración para exportar
+        const config = {
+            toImageButtonOptions: {
+                format: 'png',
+                filename: 'efecto_fotoelectrico_3D',
+                height: 1000,
+                width: 1200,
+                scale: 2
+            },
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d']
+        };
+
+        // Crear el gráfico
+        Plotly.newPlot('plot', data, layout, config);
+
+        // Función para descargar el gráfico
+        function downloadPlot() {
+            Plotly.downloadImage('plot', {
+                format: 'png',
+                width: 1200,
+                height: 1000,
+                filename: 'efecto_fotoelectrico_3D'
+            });
+        }
+    </script>
+</body>
+</html>

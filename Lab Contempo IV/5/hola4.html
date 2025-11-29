@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico 3D - Efecto Fotoeléctrico</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+        #plot {
+            width: 100%;
+            height: 700px;
+        }
+        .caption {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .instructions {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        .instructions button {
+            margin: 5px;
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .instructions button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>|
+    <div class="instructions">
+        <strong>Para guardar la imagen:</strong> Haz clic derecho sobre el gráfico → "Guardar imagen como..." o usa el botón de la cámara en la barra superior del gráfico
+        <br>
+        <button onclick="downloadPlot()">📷 Descargar Gráfico (PNG)</button>
+    </div>
+    
+    <div id="plot"></div>
+    
+    <div class="caption">
+        <strong>Figura:</strong> Dependencia de las fotocorrientes con el voltaje retardador y la longitud de onda. La superficie representa la interpolación de los datos experimentales con colores correspondientes al espectro visible.
+    </div>
+
+    <script>
+        // Función para convertir nA a μA
+        function nA_to_uA(nA) {
+            return nA / 1;
+        }
+
+        // Datos experimentales convertidos a microamperios
+        const data365 = {
+            voltage: [-4.5, -2.5, -0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5],
+            current: [0.01, 0.00, 1.64, 2.43, 2.44, 2.44, 2.50, 2.59, 2.50, 2.44, 2.55, 2.44, 2.53, 2.51, 2.49, 2.46, 2.58, 2.33].map(nA_to_uA)
+        };
+
+        const data405 = {
+            voltage: [-4.5, -2.5, -0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5],
+            current: [0.01, 0.00, 1.86, 3.40, 3.79, 3.96, 3.95, 4.05, 4.04, 3.94, 3.86, 3.77, 3.77, 3.96, 4.02, 4.28, 3.94, 4.21].map(nA_to_uA)
+        };
+
+        const data436 = {
+            voltage: [-4.5, -2.5, -0.5, 1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13.5, 15.5, 17.5, 19.5, 21.5, 23.5, 25.5, 27.5, 29.5],
+            current: [0.00, 0.00, 2.24, 4.79, 5.64, 5.87, 6.16, 5.71, 6.00, 5.92, 5.67, 5.73, 6.00, 5.99, 5.55, 6.06, 5.32, 6.03].map(nA_to_uA)
+        };
+
+        // Función para convertir longitud de onda a color RGB del espectro visible
+        function wavelengthToRGB(wavelength) {
+            let r, g, b;
+            
+            if (wavelength >= 380 && wavelength < 440) {
+                r = -(wavelength - 440) / (440 - 380);
+                g = 0.0;
+                b = 1.0;
+            } else if (wavelength >= 440 && wavelength < 490) {
+                r = 0.0;
+                g = (wavelength - 440) / (490 - 440);
+                b = 1.0;
+            } else if (wavelength >= 490 && wavelength < 510) {
+                r = 0.0;
+                g = 1.0;
+                b = -(wavelength - 510) / (510 - 490);
+            } else if (wavelength >= 510 && wavelength < 580) {
+                r = (wavelength - 510) / (580 - 510);
+                g = 1.0;
+                b = 0.0;
+            } else if (wavelength >= 580 && wavelength < 645) {
+                r = 1.0;
+                g = -(wavelength - 645) / (645 - 580);
+                b = 0.0;
+            } else if (wavelength >= 645 && wavelength <= 780) {
+                r = 1.0;
+                g = 0.0;
+                b = 0.0;
+            } else {
+                r = 0.0;
+                g = 0.0;
+                b = 0.0;
+            }
+            
+            // Ajustar intensidad en los límites del espectro
+            let factor;
+            if (wavelength >= 380 && wavelength < 420) {
+                factor = 0.3 + 0.7 * (wavelength - 380) / (420 - 380);
+            } else if (wavelength >= 420 && wavelength < 700) {
+                factor = 1.0;
+            } else if (wavelength >= 700 && wavelength <= 780) {
+                factor = 0.3 + 0.7 * (780 - wavelength) / (780 - 700);
+            } else {
+                factor = 0.0;
+            }
+            
+            r = Math.round(r * factor * 255);
+            g = Math.round(g * factor * 255);
+            b = Math.round(b * factor * 255);
+            
+            return `rgb(${r},${g},${b})`;
+        }
+
+        // Crear malla para la superficie
+        const voltages = data365.voltage;
+        const wavelengths = [365, 405, 436];
+        
+        // Matriz Z para la superficie (corriente en μA)
+        const zMatrix = [
+            data365.current,
+            data405.current,
+            data436.current
+        ];
+
+        // Crear superficie con mallas cuadriculares
+        const surface = {
+            type: 'surface',
+            x: voltages,
+            y: wavelengths,
+            z: zMatrix,
+            colorscale: [
+                [0, wavelengthToRGB(365)],
+                [0.5, wavelengthToRGB(405)],
+                [1, wavelengthToRGB(436)]
+            ],
+            showscale: false,
+            opacity: 0.7,
+            name: 'Superficie interpolada',
+            // Configuración para las mallas
+            contours: {
+                x: {
+                    show: true,
+                    start: voltages[0],
+                    end: voltages[voltages.length - 1],
+                    size: 5,
+                    color: 'rgba(100,100,100,0.3)',
+                    width: 1
+                },
+                y: {
+                    show: true,
+                    start: wavelengths[0],
+                    end: wavelengths[wavelengths.length - 1],
+                    size: 20,
+                    color: 'rgba(100,100,100,0.3)',
+                    width: 1
+                },
+                z: {
+                    show: false
+                }
+            },
+            // Añadir bordes a las mallas
+            showgrid: true,
+            gridcolor: 'rgba(80,80,80,0.4)',
+            gridwidth: 1,
+            // Mejorar la apariencia de la superficie
+            lighting: {
+                ambient: 0.8,
+                diffuse: 0.8,
+                specular: 0.1,
+                roughness: 0.5,
+                fresnel: 0.2
+            },
+            lightposition: {
+                x: 100,
+                y: 100,
+                z: 1000
+            }
+        };
+
+        // Líneas de datos experimentales
+        const wavelength365 = data365.voltage.map(() => 365);
+        const wavelength405 = data405.voltage.map(() => 405);
+        const wavelength436 = data436.voltage.map(() => 436);
+
+        const trace365 = {
+            x: data365.voltage,
+            y: wavelength365,
+            z: data365.current,
+            mode: 'lines+markers',
+            type: 'scatter3d',
+            name: '365 nm (UV)',
+            line: {
+                color: wavelengthToRGB(365),
+                width: 5
+            },
+            marker: {
+                size: 4,
+                color: wavelengthToRGB(365),
+                symbol: 'circle'
+            }
+        };
+
+        const trace405 = {
+            x: data405.voltage,
+            y: wavelength405,
+            z: data405.current,
+            mode: 'lines+markers',
+            type: 'scatter3d',
+            name: '405 nm (Violeta)',
+            line: {
+                color: wavelengthToRGB(405),
+                width: 5
+            },
+            marker: {
+                size: 4,
+                color: wavelengthToRGB(405),
+                symbol: 'circle'
+            }
+        };
+
+        const trace436 = {
+            x: data436.voltage,
+            y: wavelength436,
+            z: data436.current,
+            mode: 'lines+markers',
+            type: 'scatter3d',
+            name: '436 nm (Azul)',
+            line: {
+                color: wavelengthToRGB(436),
+                width: 5
+            },
+            marker: {
+                size: 4,
+                color: wavelengthToRGB(436),
+                symbol: 'circle'
+            }
+        };
+
+        // Añadir wireframe adicional para mayor definición de la malla
+        const wireframe = {
+            type: 'surface',
+            x: voltages,
+            y: wavelengths,
+            z: zMatrix,
+            opacity: 0.3,
+            showscale: false,
+            colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
+            showgrid: true,
+            gridcolor: 'rgba(50,50,50,0.6)',
+            gridwidth: 1,
+            contours: {
+                x: {
+                    show: true,
+                    start: voltages[0],
+                    end: voltages[voltages.length - 1],
+                    size: 2.5,
+                    color: 'rgba(80,80,80,0.5)',
+                    width: 1
+                },
+                y: {
+                    show: true,
+                    start: wavelengths[0],
+                    end: wavelengths[wavelengths.length - 1],
+                    size: 10,
+                    color: 'rgba(80,80,80,0.5)',
+                    width: 1
+                }
+            },
+            name: 'Malla cuadricular'
+        };
+
+        const data = [surface, wireframe, trace365, trace405, trace436];
+
+        // Configuración del layout
+        const layout = {
+            title: {
+                text: 'Fotocorriente vs Voltaje Retardador y Longitud de Onda',
+                font: {
+                    size: 18,
+                    family: 'Arial, sans-serif'
+                }
+            },
+            scene: {
+                xaxis: {
+                    title: 'Voltaje [V]',
+                    titlefont: { size: 17 },
+                    gridcolor: '#e0e0e0',
+                    showbackground: true,
+                    backgroundcolor: '#f5f5f5'
+                },
+                yaxis: {
+                    title: 'λ [nm]',
+                    titlefont: { size: 17 },
+                    gridcolor: '#e0e0e0',
+                    showbackground: true,
+                    backgroundcolor: '#f5f5f5'
+                },
+                zaxis: {
+                    title: 'Fotocorriente [nA]',
+                    titlefont: { size: 14 },
+                    gridcolor: '#e0e0e0',
+                    showbackground: true,
+                    backgroundcolor: '#f5f5f5'
+                },
+                camera: {
+                    eye: {
+                        x: 1.8,
+                        y: 1.8,
+                        z: 1.3
+                    }
+                }
+            },
+            showlegend: true,
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255, 255, 255, 0.9)',
+                bordercolor: '#333',
+                borderwidth: 1
+            },
+            paper_bgcolor: 'white',
+            plot_bgcolor: 'white',
+            margin: {
+                l: 0,
+                r: 0,
+                t: 50,
+                b: 0
+            }
+        };
+
+        // Configuración para exportar
+        const config = {
+            toImageButtonOptions: {
+                format: 'png',
+                filename: 'efecto_fotoelectrico_3D_superficie',
+                height: 1000,
+                width: 1200,
+                scale: 2
+            },
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['pan3d', 'orbitRotation', 'tableRotation', 'resetCameraDefault3d']
+        };
+
+        // Crear el gráfico
+        Plotly.newPlot('plot', data, layout, config);
+
+        // Función para descargar el gráfico
+        function downloadPlot() {
+            Plotly.downloadImage('plot', {
+                format: 'png',
+                width: 1200,
+                height: 1000,
+                filename: 'efecto_fotoelectrico_3D_superficie'
+            });
+        }
+
+        // Mostrar valores convertidos en consola para verificación
+        console.log("Datos convertidos a μA:");
+        console.log("365 nm - Corrientes:", data365.current.map(val => val.toFixed(4)));
+        console.log("405 nm - Corrientes:", data405.current.map(val => val.toFixed(4)));
+        console.log("436 nm - Corrientes:", data436.current.map(val => val.toFixed(4)));
+    </script>
+</body>
+</html>
